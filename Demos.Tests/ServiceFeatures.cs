@@ -6,7 +6,7 @@ namespace Demos.Tests;
 // A standalone Features over the fakes, with every demo's features, for testing them without an entrypoint.
 public static class ServiceFeatures
 {
-    public static Features Over(Fakes fakes) =>
+    public static Features Over(ITestFacilities fakes) =>
         new Features(Service.Id)
             .RegisterFeature<UnclaimedItems, AnySignedInCaller<UnclaimedItems.Args>>()
             .RegisterFeature<ItemsFoundAt, AnySignedInCaller<ItemsFoundAt.Args>>()

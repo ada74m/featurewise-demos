@@ -10,7 +10,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Demos\Demos.csproj" />
+        <ProjectReference Include="..\Demos.Aws\Demos.Aws.csproj" />
     </ItemGroup>
 
     <ItemGroup>

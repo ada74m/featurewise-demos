@@ -27,6 +27,10 @@ public class Function
     private readonly Features _features = new(Service.Id);
     private readonly JsonSerializerOptions _json;
 
+    public Function() : this(Aws.Registrations.Register)
+    {
+    }
+
     public Function(Action<IServiceCollection> registerDependencies)
     {
         _features

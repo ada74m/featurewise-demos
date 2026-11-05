@@ -18,6 +18,10 @@ public class Function
 {
     private readonly Features _features = new(Service.Id);
 
+    public Function() : this(Aws.Registrations.Register)
+    {
+    }
+
     public Function(Action<IServiceCollection> registerDependencies)
     {
         _features

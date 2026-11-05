@@ -17,7 +17,7 @@ public class ScheduledWorkerTests : IAsyncDisposable
     public ScheduledWorkerTests()
     {
         _features = ServiceFeatures.Over(_fakes);
-        _worker = new Function(_fakes.Register, () => _fakes.Store.Sandboxes);
+        _worker = new Function(_fakes.Register, _ => Task.FromResult(_fakes.Store.Sandboxes));
     }
 
     public ValueTask DisposeAsync() => _features.DisposeAsync();

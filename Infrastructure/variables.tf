@@ -1,0 +1,26 @@
+variable "name_prefix" {
+  description = "The environment's prefix, such as demos. The service adds its own id, so its resources are named <name_prefix>-demos-…, apart from other services' and the UI shell's."
+  type        = string
+}
+
+variable "jwt_issuer" {
+  description = "The issuer of visitors' tokens: the demo sign-in, or another OpenID Connect provider."
+  type        = string
+}
+
+variable "jwt_audience" {
+  description = "The audiences a visitor's token may be for, such as the shell's client id."
+  type        = list(string)
+}
+
+variable "timezone" {
+  description = "The time zone the job schedules are in."
+  type        = string
+  default     = "Europe/London"
+}
+
+variable "shell_bucket" {
+  description = "The UI shell's bucket, where the service uploads its module under modules/demos/. Without one, the service has no UI, only its backends."
+  type        = string
+  default     = null
+}

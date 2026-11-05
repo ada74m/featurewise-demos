@@ -42,7 +42,7 @@ var store = new InMemoryStore();
 var outbox = new InMemoryOutbox();
 var register = Registrations.Over(store, outbox);
 var uiBackend = new UiBackend(register);
-var scheduledWorker = new ScheduledWorker(register, () => store.Sandboxes);
+var scheduledWorker = new ScheduledWorker(register, _ => Task.FromResult(store.Sandboxes));
 var queueWorker = new QueueWorker(register);
 
 app.MapMethods("/api/demos/{feature}", ["POST", "GET"], async (HttpContext http, string feature) =>

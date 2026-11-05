@@ -27,20 +27,23 @@ The personas are a traveller, who has already reported losing an umbrella, and a
 As the `sample` service is (see its `PRINCIPLES.md`), with three additions:
 
 - **A namespace and folders per demo:** `Demos.LostProperty`, in `Features/LostProperty`, `Models/LostProperty`, `Facilities/LostProperty` and `Events/LostProperty`.
-- **Events, through an outbox.** `IEvents.Raise` stages the event in the invocation's `IChanges`, so it's committed with the feature's other writes or not at all. On AWS, DynamoDB's stream will deliver the outbox to `Demos.QueueWorker`, which turns each event into its worker's link.
-- **Sandboxes.** Each visitor works in a sandbox of their own, named by a `sandbox` claim in their token, which every persona they sign in as shares. Only the facilities read it (`SandboxedTables` locally), so the features know nothing of it. Each demo seeds a sandbox the first time it's used. A scheduled job runs once in every sandbox in use, and an event is handled in the sandbox it was raised in.
+- **Events, through an outbox.** `IEvents.Raise` stages the event in the invocation's `IChanges`, so it's committed with the feature's other writes or not at all. On AWS, the outbox is rows in the demos' table, and its stream delivers them to `Demos.QueueWorker`, which turns each event into its worker's link.
+- **Sandboxes.** Each visitor works in a sandbox of their own, named by a `sandbox` claim in their token, which every persona they sign in as shares. Only the facilities read it (`SandboxedTables` locally, `DynamoTables` on AWS), so the features know nothing of it. Each demo seeds a sandbox the first time it's used, and on AWS a sandbox's data expires a week later. A scheduled job runs once in every sandbox in use, and an event is handled in the sandbox it was raised in.
 
 | Project | What it is |
 |---|---|
 | `Demos` | The core: every demo's models, features, facilities and events. It references only `Featurewise.Core`. |
+| `Demos.Aws` | The facilities on DynamoDB: one table for every demo, keyed by sandbox and `<table>#<key>`, each record a map in `Body` so conditions can test its fields; the unit of work (`DynamoChanges`, one `TransactWriteItems` per commit); the outbox; and the table's Terraform. |
 | `Demos.UiBackend` | The backend for the UI shell: `POST /{feature}`, and `GET /{feature}?link=` for queries. |
 | `Demos.ScheduledWorker` | Runs scheduled jobs, in every sandbox in use. |
 | `Demos.QueueWorker` | Runs the workers that events trigger, from DynamoDB's stream. |
 | `Demos.Local` | Everything in one process, over facilities in memory. |
 | `Demos.Ui` | The module for the UI shell: addresses for the queries, and nothing else. |
-| `Demos.Tests` | The features, each entrypoint, and the local host. |
+| `Demos.Tests` | The features, over memory and over DynamoDB Local, each entrypoint, and the local host. |
 
-Not built yet: the AWS facilities and Terraform, the demo sign-in, and the persona bar. See `code-plan.md` in the book's repo.
+Each project keeps its Terraform in `Infrastructure/`, and the root `Infrastructure/` wires them together. `package.sh` builds the package an environment uses, and CI publishes it as `demos/<version>`.
+
+Not built yet: the demo sign-in and the persona bar. See `code-plan.md` in the book's repo.
 
 ## Running locally
 
@@ -50,5 +53,7 @@ export GITHUB_PACKAGES_TOKEN=$(gh auth token)
 (cd ../ui && npm install && npm run build)        # the shell, from a sibling checkout of featurewise-ui
 dotnet run --project Demos.Local
 ```
+
+To run the DynamoDB tests too, start DynamoDB Local (`docker run -d -p 8000:8000 amazon/dynamodb-local`) and set `DYNAMODB_LOCAL=http://localhost:8000` before `dotnet test`; without it they're skipped.
 
 Then open the URL it prints, sign in from the pill as the traveller or the clerk, and follow the links. Locally, events reach their workers as soon as they're committed, and the charity collects every minute.

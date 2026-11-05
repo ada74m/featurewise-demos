@@ -12,7 +12,7 @@ public static class Seed
         new("F-000001", "Glove", "One left glove, red wool", "Crewe", now.AddDays(-3), ItemStatus.Unclaimed),
         new("F-000002", "Instrument", "A tuba, in its case", "York", now.AddDays(-12), ItemStatus.Unclaimed),
         new("F-000003", "Clothing", "A wedding dress, ivory, size 12", "Bristol Temple Meads", now.AddDays(-40), ItemStatus.Unclaimed),
-        new("F-000004", "Teeth", "False teeth, upper set only", "Crewe", now.AddDays(-75), ItemStatus.Unclaimed),
+        new("F-000004", "Teeth", "False teeth, upper set only", "Crewe", now.AddDays(-85), ItemStatus.Unclaimed),
         new("F-000005", "Footwear", "A single roller skate", "York", now.AddDays(-95), ItemStatus.Unclaimed),
         new("F-000006", "Book", "A library book, eleven years overdue", "Bristol Temple Meads", now.AddDays(-120), ItemStatus.Unclaimed)
     ];
