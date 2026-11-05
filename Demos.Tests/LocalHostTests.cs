@@ -73,7 +73,7 @@ public class LocalHostTests : IDisposable
     {
         var config = JsonNode.Parse(await _client.GetStringAsync("/services.json"))!;
 
-        Assert.Equal(["traveller", "clerk"], config["devUsers"]!.AsArray().Select(user => user!["username"]!.GetValue<string>()));
+        Assert.Equal(["traveller", "clerk"], config["personas"]!.AsArray().Select(persona => persona!["id"]!.GetValue<string>()));
     }
 
     private const string Traveller = """{"username":"traveller"}""";

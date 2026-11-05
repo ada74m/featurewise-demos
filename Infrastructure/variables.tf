@@ -3,14 +3,9 @@ variable "name_prefix" {
   type        = string
 }
 
-variable "jwt_issuer" {
-  description = "The issuer of visitors' tokens: the demo sign-in, or another OpenID Connect provider."
+variable "shell_url" {
+  description = "The UI shell the demos are shown through, such as https://d123.cloudfront.net, which the demo sign-in sends visitors back to."
   type        = string
-}
-
-variable "jwt_audience" {
-  description = "The audiences a visitor's token may be for, such as the shell's client id."
-  type        = list(string)
 }
 
 variable "timezone" {

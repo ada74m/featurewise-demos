@@ -17,7 +17,7 @@ mkdir -p "$package/functions"
 mkdir -p "$package/Demos.Ui/dist"
 rsync -a Demos.Ui/dist/ "$package/Demos.Ui/dist/"
 
-for project in UiBackend ScheduledWorker QueueWorker; do
+for project in UiBackend ScheduledWorker QueueWorker SignIn; do
   dotnet publish "Demos.$project" -c Release -r linux-arm64 --self-contained false \
     -o "$out/publish/Demos.$project" --nologo -v quiet
   (cd "$out/publish/Demos.$project" && zip -qrX "$package/functions/Demos.$project.zip" .)
@@ -25,10 +25,14 @@ done
 
 # The modules keep their places relative to each other, as their sources refer to each other by path.
 for module in Infrastructure Demos.Aws/Infrastructure Demos.UiBackend/Infrastructure \
-  Demos.ScheduledWorker/Infrastructure Demos.QueueWorker/Infrastructure Demos.Ui/Infrastructure; do
+  Demos.ScheduledWorker/Infrastructure Demos.QueueWorker/Infrastructure Demos.SignIn/Infrastructure \
+  Demos.Ui/Infrastructure; do
   mkdir -p "$package/$module"
   rsync -a --include='*/' --include='*.tf' --exclude='*' --prune-empty-dirs "$module/" "$package/$module/"
 done
+
+# The personas, which the module's personas output reads.
+cp personas.json "$package/"
 
 echo "$version" > "$package/VERSION"
 (cd "$package" && zip -qrX "$out/demos-$version.zip" .)

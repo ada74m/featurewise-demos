@@ -18,7 +18,7 @@ using UiBackend = Demos.UiBackend.Function;
 //
 // It also serves the UI, as CloudFront will in AWS, all from one origin, so there's no CORS:
 //
-//   GET  /services.json                the shell's configuration, with the personas to sign in as
+//   GET  /services.json                the shell's configuration, with the personas in ../personas.json
 //   GET  /modules/demos/...            the demos' module, built in Demos.Ui/dist
 //   GET  anything else                 the shell, from a sibling checkout of featurewise-ui, ../ui/dist
 //
@@ -37,6 +37,9 @@ if (Directory.Exists(moduleDirectory))
     app.UseStaticFiles(new StaticFileOptions { FileProvider = new PhysicalFileProvider(moduleDirectory), RequestPath = "/modules/demos" });
 if (Directory.Exists(shellDirectory))
     app.UseStaticFiles(new StaticFileOptions { FileProvider = new PhysicalFileProvider(shellDirectory) });
+
+// The personas the shell offers, each signed in with an unsigned token, as personas.json lists them.
+var personas = JsonNode.Parse(await File.ReadAllTextAsync(Path.Combine(builder.Environment.ContentRootPath, "../personas.json")));
 
 var store = new InMemoryStore();
 var outbox = new InMemoryOutbox();
@@ -64,8 +67,7 @@ app.MapGet("/services.json", () => Results.Json(new
 {
     @default = "/demos/lost-property/unclaimed-items",
     services = new Dictionary<string, object> { [Service.Id] = new { module = "/modules/demos/index.js", bff = "/api/demos" } },
-    // The personas the shell's pill offers: for the lost property office, a traveller and a clerk.
-    devUsers = new object[] { new { username = "traveller" }, new { username = "clerk", groups = new[] { "clerk" } } }
+    personas
 }));
 
 // Any other page is an address for the shell, which reads the URL itself.

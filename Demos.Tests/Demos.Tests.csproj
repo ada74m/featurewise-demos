@@ -22,6 +22,7 @@
         <ProjectReference Include="..\Demos\Demos.csproj" />
         <ProjectReference Include="..\Demos.Local\Demos.Local.csproj" />
         <ProjectReference Include="..\Demos.Aws\Demos.Aws.csproj" />
+        <ProjectReference Include="..\Demos.SignIn\Demos.SignIn.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -18,14 +18,22 @@ module "aws" {
   name_prefix = local.name_prefix
 }
 
+# Visitors sign in as the demos' personas, which personas.json lists, with no passwords.
+module "sign_in" {
+  source = "../Demos.SignIn/Infrastructure"
+
+  name_prefix = local.name_prefix
+  shell_url   = var.shell_url
+}
+
 module "ui_backend" {
   source = "../Demos.UiBackend/Infrastructure"
 
   name_prefix       = local.name_prefix
   demos_table_name  = module.aws.table_name
   demos_policy_json = module.aws.policy_json
-  jwt_issuer        = var.jwt_issuer
-  jwt_audience      = var.jwt_audience
+  jwt_issuer        = module.sign_in.issuer
+  jwt_audience      = [module.sign_in.client_id]
 }
 
 module "scheduled_worker" {

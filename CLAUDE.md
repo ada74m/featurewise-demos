@@ -27,7 +27,8 @@ The `demos` service: small live demos for the book, each in a micro-domain of it
 - **Events go through the outbox:** a feature calls `IEvents.Raise`, and commits. `Demos.QueueWorker.Function.LinkFor` maps each event to its worker's link.
 - **Every demo is shown through the shell's generic renderer.** `Demos.Ui` gives queries addresses, as `<demo>/<query>`, and handles no results.
 - **On AWS** every demo shares one table (`Demos.Aws/Infrastructure`): partition key the sandbox, sort key `<table>#<key>`, the record as a map in `Body`, TTL on `Expires`. A facility's conditions test the record's fields (`DynamoCondition`). The outbox is rows under `outbox#`, which the stream delivers to the queue worker. `LostPropertyTests` runs against both implementations; a new demo's facility tests should too.
-- Personas are the local host's `devUsers` in `services.json` for now.
+- **Personas are in `personas.json`:** id, label, demo and groups. A demo's rules see the id as the caller's name and the groups as roles. The local host serves them in `services.json`, the sign-in (`Demos.SignIn`) offers them, and the module's `personas` output gives them to the shell.
+- **The demo sign-in** stores nothing: codes are signed tokens, and the sandbox is a cookie on its own domain, copied into every token's `sandbox` claim. The root module takes `shell_url` and makes it, and the UI backend trusts only it.
 
 ## Conventions
 
