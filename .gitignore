@@ -3,3 +3,12 @@ obj/
 *.user
 *.DotSettings.user
 .idea/
+node_modules/
+Demos.Ui/dist/
+
+# Terraform and the package package.sh builds
+.terraform/
+*.tfstate
+*.tfstate.*
+out/
+Infrastructure/.terraform.lock.hcl

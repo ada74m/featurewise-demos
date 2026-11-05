@@ -1,0 +1,16 @@
+{
+  "name": "demos-ui",
+  "private": true,
+  "type": "module",
+  "description": "The demos' module for the Featurewise UI shell: addresses only, so every page is the shell's generic renderer.",
+  "scripts": {
+    "build": "tsc --noEmit && vite build",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5",
+    "vitest": "^5.1.0"
+  }
+}
