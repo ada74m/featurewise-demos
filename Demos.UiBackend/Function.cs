@@ -34,6 +34,9 @@ public class Function
     public Function(Action<IServiceCollection> registerDependencies)
     {
         _features
+            // Every demo.
+            .RegisterFeature<ResetDemo, AnySignedInCaller<ResetDemo.Args>>()
+
             // The lost property office.
             .RegisterFeature<UnclaimedItems, AnySignedInCaller<UnclaimedItems.Args>>()
             .RegisterFeature<ItemsFoundAt, AnySignedInCaller<ItemsFoundAt.Args>>()

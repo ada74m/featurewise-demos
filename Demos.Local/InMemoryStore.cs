@@ -11,6 +11,13 @@ public class InMemoryStore
     // The sandboxes that have used any table, which scheduled jobs run in.
     public IReadOnlyList<string> Sandboxes => _tables.Keys.Select(key => key.Sandbox).Distinct().Order().ToList();
 
+    // Forgets the sandbox's copies of the tables whose names start with the prefix, so they're seeded again.
+    public void Drop(string sandbox, string prefix)
+    {
+        foreach (var key in _tables.Keys.Where(key => key.Sandbox == sandbox && key.Table.StartsWith(prefix, StringComparison.Ordinal)))
+            _tables.TryRemove(key, out _);
+    }
+
     public ConcurrentDictionary<string, object> Table(string sandbox, string table, Func<IEnumerable<(string Key, object Value)>> seed) =>
         _tables.GetOrAdd(
             (sandbox, table),

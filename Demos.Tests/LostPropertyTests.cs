@@ -199,6 +199,40 @@ public abstract class LostPropertyTests : IAsyncDisposable
     }
 
     [SkippableFact]
+    public async Task ResettingTheDemoStartsItsStoryAgain()
+    {
+        var handedIn = await HandInUmbrella();
+        await _features.Invoke(new HandleItemHandedIn.Args(handedIn.Item.Id), Callers.Job);
+
+        await _features.Invoke(new ResetDemo.Args("lost-property"), Callers.Traveller);
+
+        var unclaimed = await _features.Invoke(new UnclaimedItems.Args(), Callers.Clerk);
+        Assert.DoesNotContain(unclaimed.Items, entry => entry.Item.Id == handedIn.Item.Id);
+        Assert.Equal(6, unclaimed.Items.Count);
+        Assert.Null(Assert.Single((await _features.Invoke(new YourLostReports.Args(), Callers.Traveller)).Reports).PossibleMatch);
+    }
+
+    [SkippableFact]
+    public async Task ResettingTheDemoLeavesOtherSandboxesAlone()
+    {
+        var handedIn = await HandInUmbrella(Callers.Clerk.In("a"));
+
+        await _features.Invoke(new ResetDemo.Args("lost-property"), Callers.Traveller.In("b"));
+
+        Assert.Contains((await _features.Invoke(new UnclaimedItems.Args(), Callers.Clerk.In("a"))).Items, entry => entry.Item.Id == handedIn.Item.Id);
+    }
+
+    [SkippableFact]
+    public async Task AnItemFromBeforeAResetCantBeClaimed()
+    {
+        var handedIn = await HandInUmbrella();
+        await _features.Invoke(new HandleItemHandedIn.Args(handedIn.Item.Id), Callers.Job);
+        await _features.Invoke(new ResetDemo.Args("lost-property"), Callers.Traveller);
+
+        Assert.IsType<ClaimItem.Result.NotFound>(await _features.Invoke(new ClaimItem.Args(handedIn.Item.Id, "R-000001"), Callers.Traveller));
+    }
+
+    [SkippableFact]
     public async Task EachSandboxHasAnOfficeOfItsOwn()
     {
         var handedIn = await HandInUmbrella(Callers.Clerk.In("a"));

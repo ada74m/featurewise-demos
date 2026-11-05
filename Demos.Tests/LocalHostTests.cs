@@ -69,11 +69,12 @@ public class LocalHostTests : IDisposable
     }
 
     [Fact]
-    public async Task TheShellsConfigurationOffersTheDemosPersonas()
+    public async Task TheShellsConfigurationDescribesTheDemosAndTheirPersonas()
     {
         var config = JsonNode.Parse(await _client.GetStringAsync("/services.json"))!;
 
-        Assert.Equal(["traveller", "clerk"], config["personas"]!.AsArray().Select(persona => persona!["id"]!.GetValue<string>()));
+        var lostProperty = config["demos"]!.AsArray().Single(demo => demo!["id"]!.GetValue<string>() == "lost-property")!;
+        Assert.Equal(["traveller", "clerk"], lostProperty["personas"]!.AsArray().Select(persona => persona!["id"]!.GetValue<string>()));
     }
 
     private const string Traveller = """{"username":"traveller"}""";

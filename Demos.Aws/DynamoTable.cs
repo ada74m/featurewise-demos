@@ -8,8 +8,10 @@ namespace Demos.Aws;
 // One sandbox's copy of one of a demo's tables, in the demos' DynamoDB table. Each row holds its record as a
 // map in Body, so conditions can test its fields, and expires with the sandbox's copy of the table, by
 // DynamoDB's TTL on Expires. The copy is made from the demo's seed the first time the sandbox uses it,
-// and a marker row, seeded#<table>, records when it expires; a later visit after that makes a fresh copy.
-// DynamoDB can take a day or two to remove expired rows, so reads ignore them.
+// and a marker row, seeded#<table>, records when it expires and which generation of copy it is. Every row
+// carries the generation it was written in, and only the marker's generation is read, so deleting the
+// marker forgets the whole copy in one write, and the next use seeds a new generation; TTL removes the
+// old rows later. DynamoDB can take a day or two to remove expired rows, so reads ignore them too.
 public class DynamoTable<T>(
     IAmazonDynamoDB dynamo,
     DynamoChanges changes,
@@ -23,6 +25,7 @@ public class DynamoTable<T>(
     public const string SandboxesPartition = "sandboxes";
 
     private long? _expires;
+    private string? _generation;
 
     public async Task<T?> Find(string key, CancellationToken cancellationToken)
     {
@@ -59,26 +62,41 @@ public class DynamoTable<T>(
         return records;
     }
 
-    // Stages a new row, on condition that the key is free.
+    // Stages a new row, on condition that the key is free in this generation.
     public void Add(string key, T value) =>
-        Stage(key, value, new DynamoCondition("attribute_not_exists(#key)", new() { ["#key"] = "Key" }, []));
+        Stage(key, value, () => new DynamoCondition(
+            "attribute_not_exists(#key) OR #generation <> :generation",
+            new() { ["#key"] = "Key", ["#generation"] = "Generation" },
+            new() { [":generation"] = new AttributeValue { S = _generation } }));
 
-    // Stages replacing a row, on condition that its record still meets the condition.
-    public void Replace(string key, T value, DynamoCondition condition) => Stage(key, value, condition);
+    // Stages replacing a row, on condition that it's of this generation and its record still meets the
+    // condition.
+    public void Replace(string key, T value, DynamoCondition condition) =>
+        Stage(key, value, () => condition with
+        {
+            Expression = $"({condition.Expression}) AND #generation = :generation",
+            Names = new(condition.Names) { ["#generation"] = "Generation" },
+            Values = new(condition.Values) { [":generation"] = new AttributeValue { S = _generation } }
+        });
 
-    private void Stage(string key, T value, DynamoCondition condition)
+    // The condition is made at the commit, once the generation is known.
+    private void Stage(string key, T value, Func<DynamoCondition> condition)
     {
         changes.BeforeCommit(EnsureSeeded);
-        changes.Stage(() => new TransactWriteItem
+        changes.Stage(() =>
         {
-            Put = new Put
+            var made = condition();
+            return new TransactWriteItem
             {
-                TableName = settings.TableName,
-                Item = Row(key, value, _expires!.Value),
-                ConditionExpression = condition.Expression,
-                ExpressionAttributeNames = condition.Names,
-                ExpressionAttributeValues = condition.Values.Count == 0 ? null : condition.Values
-            }
+                Put = new Put
+                {
+                    TableName = settings.TableName,
+                    Item = Row(key, value, _expires!.Value, _generation!),
+                    ConditionExpression = made.Expression,
+                    ExpressionAttributeNames = made.Names,
+                    ExpressionAttributeValues = made.Values
+                }
+            };
         });
     }
 
@@ -92,25 +110,32 @@ public class DynamoTable<T>(
         var now = clock.GetUtcNow();
         var marker = await dynamo.GetItemAsync(
             new GetItemRequest { TableName = settings.TableName, Key = MarkerKey, ConsistentRead = true }, cancellationToken);
-        if (marker.Item is { Count: > 0 } row && Live(row))
+        if (marker.Item is { Count: > 0 } row && Unexpired(row) && row.ContainsKey("Generation"))
         {
             _expires = long.Parse(row["Expires"].N);
+            _generation = row["Generation"].S;
             return;
         }
 
         var expires = (now + settings.SandboxLifetime).ToUnixTimeSeconds();
+        var generation = Guid.NewGuid().ToString("N");
         var writes = seed().Select(record => new TransactWriteItem
         {
-            Put = new Put { TableName = settings.TableName, Item = Row(record.Key, record.Value, expires) }
+            Put = new Put { TableName = settings.TableName, Item = Row(record.Key, record.Value, expires, generation) }
         }).ToList();
         writes.Add(new TransactWriteItem
         {
             Put = new Put
             {
                 TableName = settings.TableName,
-                Item = new Dictionary<string, AttributeValue>(MarkerKey) { ["Expires"] = Number(expires) },
-                ConditionExpression = "attribute_not_exists(#key) OR Expires < :now",
-                ExpressionAttributeNames = new() { ["#key"] = "Key" },
+                Item = new Dictionary<string, AttributeValue>(MarkerKey)
+                {
+                    ["Expires"] = Number(expires),
+                    ["Generation"] = new AttributeValue { S = generation }
+                },
+                // A marker from before generations is replaced too.
+                ConditionExpression = "attribute_not_exists(#key) OR Expires < :now OR attribute_not_exists(#generation)",
+                ExpressionAttributeNames = new() { ["#key"] = "Key", ["#generation"] = "Generation" },
                 ExpressionAttributeValues = new() { [":now"] = Number(now.ToUnixTimeSeconds()) }
             }
         });
@@ -132,6 +157,7 @@ public class DynamoTable<T>(
         {
             await dynamo.TransactWriteItemsAsync(new TransactWriteItemsRequest { TransactItems = writes }, cancellationToken);
             _expires = expires;
+            _generation = generation;
         }
         catch (TransactionCanceledException)
         {
@@ -139,12 +165,16 @@ public class DynamoTable<T>(
             var seeded = await dynamo.GetItemAsync(
                 new GetItemRequest { TableName = settings.TableName, Key = MarkerKey, ConsistentRead = true }, cancellationToken);
             _expires = long.Parse(seeded.Item["Expires"].N);
+            _generation = seeded.Item["Generation"].S;
         }
     }
 
     private Dictionary<string, AttributeValue> RowKey(string key) => KeyOf($"{name}#{key}");
 
-    private Dictionary<string, AttributeValue> MarkerKey => KeyOf($"seeded#{name}");
+    private Dictionary<string, AttributeValue> MarkerKey => KeyOf($"{MarkerPrefix}{name}");
+
+    // Each table's marker row is keyed seeded#<table>.
+    public const string MarkerPrefix = "seeded#";
 
     private Dictionary<string, AttributeValue> KeyOf(string sortKey) =>
         new()
@@ -153,14 +183,19 @@ public class DynamoTable<T>(
             ["Key"] = new AttributeValue { S = sortKey }
         };
 
-    private Dictionary<string, AttributeValue> Row(string key, T value, long expires) =>
+    private Dictionary<string, AttributeValue> Row(string key, T value, long expires, string generation) =>
         new(RowKey(key))
         {
             ["Body"] = new AttributeValue { M = Document.FromJson(JsonSerializer.Serialize(value)).ToAttributeMap() },
-            ["Expires"] = Number(expires)
+            ["Expires"] = Number(expires),
+            ["Generation"] = new AttributeValue { S = generation }
         };
 
+    // A row of the copy being read: of its generation, and not expired.
     private bool Live(Dictionary<string, AttributeValue> row) =>
+        Unexpired(row) && row.TryGetValue("Generation", out var generation) && generation.S == _generation;
+
+    private bool Unexpired(Dictionary<string, AttributeValue> row) =>
         !row.TryGetValue("Expires", out var expires) || long.Parse(expires.N) > clock.GetUtcNow().ToUnixTimeSeconds();
 
     private static T Read(Dictionary<string, AttributeValue> row) =>

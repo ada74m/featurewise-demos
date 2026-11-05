@@ -30,6 +30,7 @@ public static class Registrations
         services.AddScoped<IChanges>(provider => provider.GetRequiredService<DynamoChanges>());
         services.AddScoped<DynamoTables>();
         services.AddScoped<IEvents, DynamoEvents>();
+        services.AddScoped<IDemoData, DynamoDemoData>();
 
         services.AddScoped<IFoundItems, DynamoFoundItems>();
         services.AddScoped<ILostReports, DynamoLostReports>();

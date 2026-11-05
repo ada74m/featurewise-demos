@@ -28,6 +28,7 @@ public static class Registrations
         services.AddScoped<IChanges>(provider => provider.GetRequiredService<InMemoryChanges>());
         services.AddScoped<SandboxedTables>();
         services.AddScoped<IEvents, InMemoryEvents>();
+        services.AddScoped<IDemoData, InMemoryDemoData>();
 
         services.AddScoped<IFoundItems, InMemoryFoundItems>();
         services.AddScoped<ILostReports, InMemoryLostReports>();

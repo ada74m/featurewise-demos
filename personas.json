@@ -1,4 +1,0 @@
-[
-  { "id": "traveller", "label": "Traveller", "demo": "lost-property" },
-  { "id": "clerk", "label": "Clerk", "demo": "lost-property", "groups": ["clerk"] }
-]

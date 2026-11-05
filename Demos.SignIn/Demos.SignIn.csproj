@@ -10,8 +10,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <!-- The personas the demos have, which the sign-in offers. -->
-        <None Include="..\personas.json" Link="personas.json" CopyToOutputDirectory="PreserveNewest" />
+        <!-- The demos and their personas, which the sign-in offers. -->
+        <None Include="..\demos.json" Link="demos.json" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
     <ItemGroup>

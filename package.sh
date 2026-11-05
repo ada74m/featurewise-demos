@@ -31,8 +31,8 @@ for module in Infrastructure Demos.Aws/Infrastructure Demos.UiBackend/Infrastruc
   rsync -a --include='*/' --include='*.tf' --exclude='*' --prune-empty-dirs "$module/" "$package/$module/"
 done
 
-# The personas, which the module's personas output reads.
-cp personas.json "$package/"
+# The demos, with their personas, which the module's demos output reads.
+cp demos.json "$package/"
 
 echo "$version" > "$package/VERSION"
 (cd "$package" && zip -qrX "$out/demos-$version.zip" .)

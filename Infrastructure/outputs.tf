@@ -7,9 +7,9 @@ output "sign_in" {
   value       = module.sign_in.endpoints
 }
 
-output "personas" {
-  description = "The personas visitors can be, for the UI shell's personas input."
-  value       = jsondecode(file("${path.module}/../personas.json"))
+output "demos" {
+  description = "Each demo: its title, its text, its personas and its reset link, for the UI shell's demos input."
+  value       = jsondecode(file("${path.module}/../demos.json"))
 }
 
 output "table_name" {

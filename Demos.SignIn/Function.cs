@@ -12,7 +12,7 @@ using Amazon.Lambda.Serialization.SystemTextJson;
 namespace Demos.SignIn;
 
 // The demos' sign-in: an OpenID Connect provider with no passwords, where a visitor becomes any of the
-// demos' personas by choosing it, or by the shell naming it in login_hint, which signs it in at once.
+// demos' personas, as demos.json lists them, by choosing it, or by the shell naming it in login_hint, which signs it in at once.
 // Every token carries the visitor's sandbox, from a cookie the sign-in sets on the first visit, so all
 // the personas a visitor becomes share one sandbox. Only the demo environment has it.
 //
@@ -36,7 +36,7 @@ public class Function
     public Function() : this(
         new KmsSigner(new AmazonKeyManagementServiceClient(), Setting("KEY_ID")),
         new Settings(Setting("CLIENT_ID"), Setting("REDIRECT_URI"), Setting("LOGOUT_URI")),
-        Persona.Load(Path.Combine(AppContext.BaseDirectory, "personas.json")),
+        Persona.Load(Path.Combine(AppContext.BaseDirectory, "demos.json")),
         TimeProvider.System)
     {
     }

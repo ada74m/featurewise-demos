@@ -18,7 +18,7 @@ module "aws" {
   name_prefix = local.name_prefix
 }
 
-# Visitors sign in as the demos' personas, which personas.json lists, with no passwords.
+# Visitors sign in as the demos' personas, which demos.json lists, with no passwords.
 module "sign_in" {
   source = "../Demos.SignIn/Infrastructure"
 

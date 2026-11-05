@@ -8,6 +8,7 @@ public static class ServiceFeatures
 {
     public static Features Over(ITestFacilities fakes) =>
         new Features(Service.Id)
+            .RegisterFeature<ResetDemo, AnySignedInCaller<ResetDemo.Args>>()
             .RegisterFeature<UnclaimedItems, AnySignedInCaller<UnclaimedItems.Args>>()
             .RegisterFeature<ItemsFoundAt, AnySignedInCaller<ItemsFoundAt.Args>>()
             .RegisterFeature<DonatedToCharity, AnySignedInCaller<DonatedToCharity.Args>>()

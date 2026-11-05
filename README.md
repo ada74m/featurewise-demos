@@ -37,16 +37,14 @@ As the `sample` service is (see its `PRINCIPLES.md`), with three additions:
 | `Demos.UiBackend` | The backend for the UI shell: `POST /{feature}`, and `GET /{feature}?link=` for queries. |
 | `Demos.ScheduledWorker` | Runs scheduled jobs, in every sandbox in use. |
 | `Demos.QueueWorker` | Runs the workers that events trigger, from DynamoDB's stream. |
-| `Demos.SignIn` | The demo sign-in: an OpenID Connect provider with no passwords, where a visitor becomes any persona in `personas.json`. The shell names one in `login_hint` and it's signed in at once; without one, the sign-in shows them all. Tokens are RS256, signed by a KMS key, and carry the visitor's sandbox, from a cookie the sign-in sets on the first visit. It stores nothing: a code is itself a signed token, good for two minutes and only with the PKCE verifier. |
+| `Demos.SignIn` | The demo sign-in: an OpenID Connect provider with no passwords, where a visitor becomes any persona in `demos.json`. The shell names one in `login_hint` and it's signed in at once; without one, the sign-in shows them all. Tokens are RS256, signed by a KMS key, and carry the visitor's sandbox, from a cookie the sign-in sets on the first visit. It stores nothing: a code is itself a signed token, good for two minutes and only with the PKCE verifier. |
 | `Demos.Local` | Everything in one process, over facilities in memory. |
 | `Demos.Ui` | The module for the UI shell: addresses for the queries, and nothing else. |
 | `Demos.Tests` | The features, over memory and over DynamoDB Local, each entrypoint, and the local host. |
 
 Each project keeps its Terraform in `Infrastructure/`, and the root `Infrastructure/` wires them together. `package.sh` builds the package an environment uses, and CI publishes it as `demos/<version>`.
 
-`personas.json` lists who a visitor can be in each demo. The sign-in offers them, the local host's `services.json` does, and the environment passes them to the shell, whose persona bar shows a demo's personas above its pages. Any address takes `?as=<persona>`, as a link from the book does.
-
-Not built yet: resetting a demo. See `code-plan.md` in the book's repo.
+`demos.json` describes each demo: its title and chapter, what it is, the story its seed data tells, what to try, who a visitor can be in it, and the link that resets it. The sign-in offers its personas, the local host's `services.json` carries it, and the environment passes it to the shell, whose demo panel shows it above the demo's pages, with a button for each persona the text names and **Reset this demo**. `ResetDemo` forgets the demo's data in the visitor's sandbox, so its story starts again. Any address takes `?as=<persona>`, as a link from the book does.
 
 ## Running locally
 

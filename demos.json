@@ -1,0 +1,25 @@
+[
+  {
+    "id": "lost-property",
+    "title": "The lost property office",
+    "chapter": "1. Features",
+    "about": [
+      "A railway station's lost property office. Its queries say what's there, its commands hand things in and claim them, and two workers act when nobody is waiting: one when something is handed in, and one on a schedule."
+    ],
+    "storySoFar": [
+      "Six things are waiting to be claimed, from a left glove to a set of false teeth (upper only). The roller skate and the library book have waited three months, so the next charity collection takes them.",
+      "Yesterday the traveller reported losing a black umbrella with a duck's head handle. Nobody has handed one in."
+    ],
+    "tryThis": [
+      "As the clerk, hand in an umbrella found at any station.",
+      "As the traveller, look at your lost reports: the office has noticed it may be yours, and offers a link to claim it. Claim it, then try claiming it again.",
+      "As the traveller, try claiming the tuba with your umbrella report.",
+      "The charity collects early each morning: see what was donated to charity."
+    ],
+    "personas": [
+      { "id": "traveller", "label": "Traveller" },
+      { "id": "clerk", "label": "Clerk", "groups": ["clerk"] }
+    ],
+    "reset": { "$feature": "demos/ResetDemo", "Demo": "lost-property" }
+  }
+]

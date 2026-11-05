@@ -8,6 +8,8 @@ public class SandboxedTables(InMemoryStore store, Invocation invocation)
 {
     public string Sandbox => Sandboxes.Of(invocation.Caller);
 
+    public void Drop(string prefix) => store.Drop(Sandbox, prefix);
+
     public InMemoryTable<T> Table<T>(string name, Func<IEnumerable<(string Key, T Value)>> seed) where T : notnull =>
         new(store.Table(Sandbox, name, () => seed().Select(row => (row.Key, (object)row.Value))));
 }

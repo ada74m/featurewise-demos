@@ -30,7 +30,7 @@ resource "aws_dynamodb_table" "demos" {
 # What the facilities do, for each function's policy: read a sandbox's rows, and write them in transactions.
 data "aws_iam_policy_document" "demos" {
   statement {
-    actions   = ["dynamodb:GetItem", "dynamodb:Query", "dynamodb:Scan", "dynamodb:PutItem", "dynamodb:ConditionCheckItem"]
+    actions   = ["dynamodb:GetItem", "dynamodb:Query", "dynamodb:Scan", "dynamodb:PutItem", "dynamodb:DeleteItem", "dynamodb:ConditionCheckItem"]
     resources = [aws_dynamodb_table.demos.arn]
   }
 }
