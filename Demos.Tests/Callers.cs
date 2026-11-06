@@ -4,7 +4,7 @@ using Featurewise;
 namespace Demos.Tests;
 
 // Callers for invoking features directly: the lost property office's traveller and clerk, another
-// traveller, and a job.
+// traveller, the box office's theatregoer and staff, another theatregoer, and a job.
 public static class Callers
 {
     public static ClaimsPrincipal Traveller => Person("traveller");
@@ -12,6 +12,12 @@ public static class Callers
     public static ClaimsPrincipal OtherTraveller => Person("someone-else");
 
     public static ClaimsPrincipal Clerk => Person("clerk", "clerk");
+
+    public static ClaimsPrincipal Theatregoer => Person("theatregoer");
+
+    public static ClaimsPrincipal OtherTheatregoer => Person("another-theatregoer");
+
+    public static ClaimsPrincipal Staff => Person("box-office-staff", "staff");
 
     public static ClaimsPrincipal Job => SystemCaller.For("test-job");
 

@@ -1,5 +1,7 @@
 using Amazon.DynamoDBv2;
+using Demos.Aws.BoxOffice;
 using Demos.Aws.LostProperty;
+using Demos.BoxOffice;
 using Demos.LostProperty;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -34,6 +36,10 @@ public static class Registrations
 
         services.AddScoped<IFoundItems, DynamoFoundItems>();
         services.AddScoped<ILostReports, DynamoLostReports>();
+
+        services.AddScoped<IPerformances, DynamoPerformances>();
+        services.AddScoped<IBookings, DynamoBookings>();
+        services.AddScoped<IReturnsQueue, DynamoReturnsQueue>();
     }
 
     private static string Setting(string name) =>

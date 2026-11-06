@@ -5,6 +5,7 @@ using System.Text.Json.Nodes;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.Serialization.SystemTextJson;
+using Demos.BoxOffice;
 using Demos.LostProperty;
 using Featurewise;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,7 +45,15 @@ public class Function
             .RegisterFeature<YourLostReports, AnySignedInCaller<YourLostReports.Args>>()
             .RegisterFeature<HandInItem, HandInItem.Rule>()
             .RegisterFeature<ReportLostItem, AnySignedInCaller<ReportLostItem.Args>>()
-            .RegisterFeature<ClaimItem, AnySignedInCaller<ClaimItem.Args>>();
+            .RegisterFeature<ClaimItem, AnySignedInCaller<ClaimItem.Args>>()
+
+            // The theatre box office.
+            .RegisterFeature<Performances, AnySignedInCaller<Performances.Args>>()
+            .RegisterFeature<YourTickets, AnySignedInCaller<YourTickets.Args>>()
+            .RegisterFeature<BuySeats, AnySignedInCaller<BuySeats.Args>>()
+            .RegisterFeature<JoinReturnsQueue, AnySignedInCaller<JoinReturnsQueue.Args>>()
+            .RegisterFeature<CancelPerformance, StaffOnly<CancelPerformance.Args>>()
+            .RegisterFeature<ReleaseHouseSeats, StaffOnly<ReleaseHouseSeats.Args>>();
 
         _json = _features.ConfigureJson(new JsonSerializerOptions());
 

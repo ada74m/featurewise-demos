@@ -2,7 +2,7 @@
 
 Small, live demos of the ideas in *Featurewise Organisation*, each in a micro-domain of its own. They're one Featurewise service, `demos`, shown through the UI shell's generic renderer, so what a visitor sees is the features' own output: their result cases, and the links appearing and disappearing as the persona changes. The book's code samples come from here.
 
-Built so far: the lost property office, for chapter 1.
+Built so far: the lost property office, for chapter 1, and the theatre box office, for chapter 4.
 
 ## The lost property office (chapter 1)
 
@@ -22,11 +22,26 @@ A railway station's lost property office, showing a feature as a whole job, a co
 
 The personas are a traveller, who has already reported losing an umbrella, and a clerk. Hand in an umbrella as the clerk, switch to the traveller, and `YourLostReports` shows it, with a link to claim it.
 
+## The theatre box office (chapter 4)
+
+A small theatre's box office, selling seats for the four performances of *The Pirates of Penge*. It shows links offered only when they'd work, by the state of things and by who's asking, links that bring the next step to you, and result cases that turn an obstacle into a way forward.
+
+| Feature | Family | What it does |
+|---|---|---|
+| `Performances` | Query | Every performance, each with `LinkToBuySeats` while it has seats, `LinkToJoinReturnsQueue` once it's sold out, and for staff, `LinkToCancel` and `LinkToReleaseHouseSeats` |
+| `YourTickets` | Query | The caller's tickets, and the performances they're waiting for returns to, each with a link to buy seats once there are some |
+| `BuySeats` | Command | `Bought`, `NeedsDetails`, `NotEnoughSeats` (with a link to buy those left), `SoldOut` (with a link to the returns queue), `PerformanceCancelled` or `NotFound` |
+| `JoinReturnsQueue` | Command | `Joined`, `AlreadyQueuing`, `SeatsAvailable` (with a link to buy them), `PerformanceCancelled` or `NotFound` |
+| `CancelPerformance` | Command | Staff only: `Cancelled`, `AlreadyCancelled` or `NotFound` |
+| `ReleaseHouseSeats` | Command | Staff only: puts the seats held back for the house on sale. `Released`, `NoHouseSeats`, `PerformanceCancelled` or `NotFound` |
+
+The personas are a theatregoer, who already has tickets for Thursday, and box office staff. The Saturday matinee is sold out: join its returns queue as the theatregoer, release its house seats as staff, and the theatregoer's place in the queue offers a link to buy them. A performance changes only if nobody has changed it since it was read, so two tabs buying the last seats can't both have them.
+
 ## How it's built
 
 As the `sample` service is (see its `PRINCIPLES.md`), with three additions:
 
-- **A namespace and folders per demo:** `Demos.LostProperty`, in `Features/LostProperty`, `Models/LostProperty`, `Facilities/LostProperty` and `Events/LostProperty`.
+- **A namespace and folders per demo,** such as `Demos.LostProperty`, in `Features/LostProperty`, `Models/LostProperty`, `Facilities/LostProperty` and `Events/LostProperty`.
 - **Events, through an outbox.** `IEvents.Raise` stages the event in the invocation's `IChanges`, so it's committed with the feature's other writes or not at all. On AWS, the outbox is rows in the demos' table, and its stream delivers them to `Demos.QueueWorker`, which turns each event into its worker's link.
 - **Sandboxes.** Each visitor works in a sandbox of their own, named by a `sandbox` claim in their token, which every persona they sign in as shares. Only the facilities read it (`SandboxedTables` locally, `DynamoTables` on AWS), so the features know nothing of it. Each demo seeds a sandbox the first time it's used, and on AWS a sandbox's data expires a week later. A scheduled job runs once in every sandbox in use, and an event is handled in the sandbox it was raised in.
 
@@ -57,4 +72,4 @@ dotnet run --project Demos.Local
 
 To run the DynamoDB tests too, start DynamoDB Local (`docker run -d -p 8000:8000 amazon/dynamodb-local`) and set `DYNAMODB_LOCAL=http://localhost:8000` before `dotnet test`; without it they're skipped.
 
-Then open the URL it prints, sign in from the pill as the traveller or the clerk, and follow the links. Locally, events reach their workers as soon as they're committed, and the charity collects every minute.
+Then open the URL it prints, sign in from the pill as any persona, and follow the links. The box office is at `/demos/box-office/performances`. Locally, events reach their workers as soon as they're committed, and the charity collects every minute.

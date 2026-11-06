@@ -79,6 +79,13 @@ public class DynamoTable<T>(
             Values = new(condition.Values) { [":generation"] = new AttributeValue { S = _generation } }
         });
 
+    // Stages deleting a row. A row of an earlier generation is already forgotten, so deleting it does no harm.
+    public void Delete(string key)
+    {
+        changes.BeforeCommit(EnsureSeeded);
+        changes.Stage(() => new TransactWriteItem { Delete = new Delete { TableName = settings.TableName, Key = RowKey(key) } });
+    }
+
     // The condition is made at the commit, once the generation is known.
     private void Stage(string key, T value, Func<DynamoCondition> condition)
     {

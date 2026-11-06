@@ -21,5 +21,29 @@
       { "id": "clerk", "label": "Clerk", "groups": ["clerk"] }
     ],
     "reset": { "$feature": "demos/ResetDemo", "Demo": "lost-property" }
+  },
+  {
+    "id": "box-office",
+    "title": "The theatre box office",
+    "chapter": "4. Usability in Core",
+    "about": [
+      "A small theatre's box office, selling seats for the four performances of The Pirates of Penge. Each performance offers only the links that would work for you now, and every result that says no says what you can do instead."
+    ],
+    "storySoFar": [
+      "Thursday has plenty of seats, and the theatregoer already has two tickets for it. Friday has two seats left. Saturday evening has plenty.",
+      "The Saturday matinee is sold out, though the box office is still holding back four house seats."
+    ],
+    "tryThis": [
+      "As the theatregoer, look at the performances: the matinee offers no way to buy seats, only to join the returns queue. Join it.",
+      "Open Friday's link to buy seats, ask for 4, and see what the box office offers instead.",
+      "Switch to box office staff: you're offered cancelling each performance, which the theatregoer never was, and releasing the matinee's house seats. Release them.",
+      "As the theatregoer, look at your tickets: your place in the matinee's returns queue now has a link to buy seats.",
+      "Open the performances in two tabs. Buy the last seats for a performance in one, then follow the same link in the other."
+    ],
+    "personas": [
+      { "id": "theatregoer", "label": "Theatregoer" },
+      { "id": "box-office-staff", "label": "Box office staff", "groups": ["staff"] }
+    ],
+    "reset": { "$feature": "demos/ResetDemo", "Demo": "box-office" }
   }
 ]

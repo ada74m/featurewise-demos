@@ -1,7 +1,7 @@
 import type { Link, ServiceModule } from "./shell";
 
 // The demos' module. It gives the demos' queries addresses, each starting with its demo's name, as in
-// "lost-property/unclaimed-items", and handles no results itself: the demos show the shell's generic
+// "lost-property/unclaimed-items" and "box-office/performances", and handles no results itself: the demos show the shell's generic
 // renderer, so the links appearing and disappearing are what a visitor sees.
 
 const feature = (name: string) => `demos/${name}`;
@@ -10,7 +10,9 @@ const feature = (name: string) => `demos/${name}`;
 const fixed: Record<string, string> = {
   "lost-property/unclaimed-items": feature("UnclaimedItems"),
   "lost-property/donated-to-charity": feature("DonatedToCharity"),
-  "lost-property/your-lost-reports": feature("YourLostReports")
+  "lost-property/your-lost-reports": feature("YourLostReports"),
+  "box-office/performances": feature("Performances"),
+  "box-office/your-tickets": feature("YourTickets")
 };
 
 const foundAt = "lost-property/found-at/";
@@ -20,6 +22,8 @@ const demos: ServiceModule = {
     const path = address.split("?")[0] ?? "";
     if (path === "" || path === "lost-property")
       return { $feature: feature("UnclaimedItems") };
+    if (path === "box-office")
+      return { $feature: feature("Performances") };
     if (fixed[path])
       return { $feature: fixed[path] };
     if (path.startsWith(foundAt) && path.length > foundAt.length)

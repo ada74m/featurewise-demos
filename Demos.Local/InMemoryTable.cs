@@ -12,4 +12,6 @@ public class InMemoryTable<T>(ConcurrentDictionary<string, object> rows) where T
     public IReadOnlyList<T> All() => rows.Values.Cast<T>().ToList();
 
     public void Put(string key, T value) => rows[key] = value;
+
+    public void Remove(string key) => rows.TryRemove(key, out _);
 }

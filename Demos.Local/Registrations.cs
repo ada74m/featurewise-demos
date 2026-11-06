@@ -1,3 +1,5 @@
+using Demos.BoxOffice;
+using Demos.Local.BoxOffice;
 using Demos.Local.LostProperty;
 using Demos.LostProperty;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,5 +34,9 @@ public static class Registrations
 
         services.AddScoped<IFoundItems, InMemoryFoundItems>();
         services.AddScoped<ILostReports, InMemoryLostReports>();
+
+        services.AddScoped<IPerformances, InMemoryPerformances>();
+        services.AddScoped<IBookings, InMemoryBookings>();
+        services.AddScoped<IReturnsQueue, InMemoryReturnsQueue>();
     }
 }

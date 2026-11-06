@@ -1,3 +1,4 @@
+using Demos.BoxOffice;
 using Demos.LostProperty;
 using Featurewise;
 
@@ -18,6 +19,12 @@ public static class ServiceFeatures
             .RegisterFeature<ClaimItem, AnySignedInCaller<ClaimItem.Args>>()
             .RegisterFeature<HandleItemHandedIn, AnySystemCaller<HandleItemHandedIn.Args>>()
             .RegisterFeature<HandleCharityCollectionDue, AnySystemCaller<HandleCharityCollectionDue.Args>>()
+            .RegisterFeature<Performances, AnySignedInCaller<Performances.Args>>()
+            .RegisterFeature<YourTickets, AnySignedInCaller<YourTickets.Args>>()
+            .RegisterFeature<BuySeats, AnySignedInCaller<BuySeats.Args>>()
+            .RegisterFeature<JoinReturnsQueue, AnySignedInCaller<JoinReturnsQueue.Args>>()
+            .RegisterFeature<CancelPerformance, StaffOnly<CancelPerformance.Args>>()
+            .RegisterFeature<ReleaseHouseSeats, StaffOnly<ReleaseHouseSeats.Args>>()
             .RegisterDependencies(fakes.Register)
             .Build();
 }
