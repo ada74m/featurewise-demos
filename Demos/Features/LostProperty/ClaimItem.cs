@@ -19,7 +19,8 @@ public class ClaimItem(IFoundItems items, ILostReports reports, IChanges changes
 
         public record AlreadyClaimed(string ItemId) : Result;
 
-        public record DoesntMatchReport(string ItemId, string Reference) : Result;
+        // The link back, to try another reference, and the traveller's reports, where their references are.
+        public record DoesntMatchReport(string ItemId, string Reference, Args LinkToClaim, YourLostReports.Args LinkToYourReports) : Result;
 
         // No such item, or not any more: it went to charity.
         public record NotFound(string ItemId) : Result;
@@ -37,7 +38,7 @@ public class ClaimItem(IFoundItems items, ILostReports reports, IChanges changes
         var report = await reports.Find(args.Reference, cancellationToken);
         if (report is null || report.Traveller != traveller
             || !string.Equals(report.Category, item.Category, StringComparison.OrdinalIgnoreCase))
-            return new Result.DoesntMatchReport(args.ItemId, args.Reference);
+            return new Result.DoesntMatchReport(args.ItemId, args.Reference, args, new YourLostReports.Args());
 
         // Someone else may claim it first, and then the claim's condition fails.
         items.Claim(item, traveller);

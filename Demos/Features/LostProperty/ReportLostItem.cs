@@ -3,7 +3,8 @@ using Featurewise;
 namespace Demos.LostProperty;
 
 // A traveller describes something they lost. A link with any detail null, as YourLostReports offers,
-// asks for them: invoking it returns NeedsDetails.
+// asks for them: invoking it returns NeedsDetails, with the link back, as filled in so far, to complete and
+// follow again.
 public class ReportLostItem(ILostReports reports, IChanges changes, Invocation invocation, TimeProvider clock)
     : Command<ReportLostItem, ReportLostItem.Args, ReportLostItem.Result>
 {
@@ -17,7 +18,7 @@ public class ReportLostItem(ILostReports reports, IChanges changes, Invocation i
 
         public record Reported(LostReport Report, YourLostReports.Args LinkToYourReports) : Result;
 
-        public record NeedsDetails(IReadOnlyList<string> Missing) : Result;
+        public record NeedsDetails(IReadOnlyList<string> Missing, Args LinkToReport) : Result;
     }
 
     public override async Task<Result> Invoke(Args args, CancellationToken cancellationToken)
@@ -26,7 +27,7 @@ public class ReportLostItem(ILostReports reports, IChanges changes, Invocation i
             (nameof(Args.Category), args.Category),
             (nameof(Args.Description), args.Description));
         if (missing.Count > 0)
-            return new Result.NeedsDetails(missing);
+            return new Result.NeedsDetails(missing, args);
 
         var report = new LostReport(
             References.NewReportReference(), invocation.Caller.Identity!.Name!, args.Category!.Trim(),

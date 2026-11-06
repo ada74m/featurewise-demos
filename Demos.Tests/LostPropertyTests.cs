@@ -63,7 +63,11 @@ public abstract class LostPropertyTests : IAsyncDisposable
 
         var result = await _features.Invoke(link with { Category = "Umbrella" }, Callers.Clerk);
 
-        Assert.Equal(new[] { "Description", "Station" }, Assert.IsType<HandInItem.Result.NeedsDetails>(result).Missing);
+        var needs = Assert.IsType<HandInItem.Result.NeedsDetails>(result);
+        Assert.Equal(new[] { "Description", "Station" }, needs.Missing);
+        Assert.Equal("Umbrella", needs.LinkToHandIn.Category);
+        Assert.IsType<HandInItem.Result.HandedIn>(
+            await _features.Invoke(needs.LinkToHandIn with { Description = "Black", Station = "York" }, Callers.Clerk));
     }
 
     [SkippableFact]
@@ -120,9 +124,26 @@ public abstract class LostPropertyTests : IAsyncDisposable
     [SkippableFact]
     public async Task AClaimWithAReportOfSomethingElseDoesntMatch()
     {
-        var result = await _features.Invoke(new ClaimItem.Args("F-000002", "R-000001"), Callers.Traveller);
+        var claim = new ClaimItem.Args("F-000002", "R-000001");
 
-        Assert.Equal(new ClaimItem.Result.DoesntMatchReport("F-000002", "R-000001"), result);
+        var result = await _features.Invoke(claim, Callers.Traveller);
+
+        Assert.Equal(new ClaimItem.Result.DoesntMatchReport("F-000002", "R-000001", claim, new YourLostReports.Args()), result);
+    }
+
+    [SkippableFact]
+    public async Task AClaimThatDoesntMatchCanBeTriedAgainWithTheRightReport()
+    {
+        var handedIn = await HandInUmbrella();
+        var reported = Assert.IsType<ReportLostItem.Result.Reported>(
+            await _features.Invoke(new ReportLostItem.Args("Hat", "A bowler"), Callers.Traveller));
+
+        var wrong = Assert.IsType<ClaimItem.Result.DoesntMatchReport>(
+            await _features.Invoke(new ClaimItem.Args(handedIn.Item.Id, reported.Report.Reference), Callers.Traveller));
+
+        var reports = await _features.Invoke(wrong.LinkToYourReports, Callers.Traveller);
+        var umbrella = reports.Reports.Single(report => report.Report.Category == "Umbrella").Report.Reference;
+        Assert.IsType<ClaimItem.Result.Claimed>(await _features.Invoke(wrong.LinkToClaim with { Reference = umbrella }, Callers.Traveller));
     }
 
     [SkippableFact]
@@ -195,7 +216,10 @@ public abstract class LostPropertyTests : IAsyncDisposable
     {
         var result = await _features.Invoke(new ReportLostItem.Args(null, " "), Callers.Traveller);
 
-        Assert.Equal(new[] { "Category", "Description" }, Assert.IsType<ReportLostItem.Result.NeedsDetails>(result).Missing);
+        var needs = Assert.IsType<ReportLostItem.Result.NeedsDetails>(result);
+        Assert.Equal(new[] { "Category", "Description" }, needs.Missing);
+        Assert.IsType<ReportLostItem.Result.Reported>(
+            await _features.Invoke(needs.LinkToReport with { Category = "Hat", Description = "A bowler" }, Callers.Traveller));
     }
 
     [SkippableFact]

@@ -3,7 +3,7 @@ using Featurewise;
 namespace Demos.BoxOffice;
 
 // A theatregoer buys seats for a performance. A link with no number of seats, as Performances offers, asks
-// for it. Each way it can't be done says what can: buy the seats that are left, join the returns queue, or
+// for it, and hands the link back to fill in. Each way it can't be done says what can: buy the seats that are left, join the returns queue, or
 // choose another performance.
 public class BuySeats(IPerformances performances, IBookings bookings, IReturnsQueue queue, IChanges changes, Invocation invocation, TimeProvider clock)
     : Command<BuySeats, BuySeats.Args, BuySeats.Result>
@@ -18,7 +18,7 @@ public class BuySeats(IPerformances performances, IBookings bookings, IReturnsQu
 
         public record Bought(Booking Booking, YourTickets.Args LinkToYourTickets) : Result;
 
-        public record NeedsDetails(IReadOnlyList<string> Missing) : Result;
+        public record NeedsDetails(IReadOnlyList<string> Missing, Args LinkToBuySeats) : Result;
 
         public record NotEnoughSeats(int SeatsLeft, Args LinkToBuySeatsLeft) : Result;
 
@@ -32,7 +32,7 @@ public class BuySeats(IPerformances performances, IBookings bookings, IReturnsQu
     public override async Task<Result> Invoke(Args args, CancellationToken cancellationToken)
     {
         if (args.Seats is not > 0)
-            return new Result.NeedsDetails([nameof(Args.Seats)]);
+            return new Result.NeedsDetails([nameof(Args.Seats)], args);
         var seats = args.Seats.Value;
         var theatregoer = invocation.Caller.Identity!.Name!;
 

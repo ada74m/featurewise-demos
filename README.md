@@ -14,9 +14,9 @@ A railway station's lost property office, showing a feature as a whole job, a co
 | `ItemsFoundAt` | Query | What's waiting at one station |
 | `YourLostReports` | Query | The caller's reports, each with any item that may be theirs, and a link to claim it |
 | `DonatedToCharity` | Query | What the charity collections took |
-| `HandInItem` | Command | A clerk logs a found item. Returns `HandedIn`, or `NeedsDetails` |
-| `ReportLostItem` | Command | A traveller describes what they lost. Returns `Reported`, or `NeedsDetails` |
-| `ClaimItem` | Command | `Claimed`, `AlreadyClaimed`, `DoesntMatchReport` or `NotFound` |
+| `HandInItem` | Command | A clerk logs a found item. Returns `HandedIn`, or `NeedsDetails` with the link back to complete |
+| `ReportLostItem` | Command | A traveller describes what they lost. Returns `Reported`, or `NeedsDetails` with the link back to complete |
+| `ClaimItem` | Command | `Claimed`, `AlreadyClaimed`, `DoesntMatchReport` (with the link back to try another reference, and one to the traveller's reports) or `NotFound` |
 | `HandleItemHandedIn` | Worker, on the event `ItemHandedIn` | Notes the item on every unmatched report of the same kind of thing |
 | `HandleCharityCollectionDue` | Worker, on a schedule | Gives away everything unclaimed for three months |
 
@@ -30,7 +30,7 @@ A small theatre's box office, selling seats for the four performances of *The Pi
 |---|---|---|
 | `Performances` | Query | Every performance, each with `LinkToBuySeats` while it has seats, `LinkToJoinReturnsQueue` once it's sold out, and for staff, `LinkToCancel` and `LinkToReleaseHouseSeats` |
 | `YourTickets` | Query | The caller's tickets, and the performances they're waiting for returns to, each with a link to buy seats once there are some |
-| `BuySeats` | Command | `Bought`, `NeedsDetails`, `NotEnoughSeats` (with a link to buy those left), `SoldOut` (with a link to the returns queue), `PerformanceCancelled` or `NotFound` |
+| `BuySeats` | Command | `Bought`, `NeedsDetails` (with the link back to complete), `NotEnoughSeats` (with a link to buy those left), `SoldOut` (with a link to the returns queue), `PerformanceCancelled` or `NotFound` |
 | `JoinReturnsQueue` | Command | `Joined`, `AlreadyQueuing`, `SeatsAvailable` (with a link to buy them), `PerformanceCancelled` or `NotFound` |
 | `CancelPerformance` | Command | Staff only: `Cancelled`, `AlreadyCancelled` or `NotFound` |
 | `ReleaseHouseSeats` | Command | Staff only: puts the seats held back for the house on sale. `Released`, `NoHouseSeats`, `PerformanceCancelled` or `NotFound` |

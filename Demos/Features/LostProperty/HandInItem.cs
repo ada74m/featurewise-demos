@@ -4,8 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 namespace Demos.LostProperty;
 
 // A clerk logs something found at a station. A link with any detail null, as UnclaimedItems offers, asks
-// for them: invoking it returns NeedsDetails. Handing an item in raises ItemHandedIn, so that
-// HandleItemHandedIn can look for travellers who reported losing it.
+// for them: invoking it returns NeedsDetails, with the link back, as filled in so far, to complete and
+// follow again. Handing an item in raises ItemHandedIn, so that HandleItemHandedIn can look for travellers
+// who reported losing it.
 public class HandInItem(IFoundItems items, IEvents events, IChanges changes, TimeProvider clock)
     : Command<HandInItem, HandInItem.Args, HandInItem.Result>
 {
@@ -20,7 +21,7 @@ public class HandInItem(IFoundItems items, IEvents events, IChanges changes, Tim
         // The item's id is the reference the clerk writes on its label.
         public record HandedIn(FoundItem Item, UnclaimedItems.Args LinkToUnclaimedItems) : Result;
 
-        public record NeedsDetails(IReadOnlyList<string> Missing) : Result;
+        public record NeedsDetails(IReadOnlyList<string> Missing, Args LinkToHandIn) : Result;
     }
 
     // Only clerks hand items in.
@@ -42,7 +43,7 @@ public class HandInItem(IFoundItems items, IEvents events, IChanges changes, Tim
             (nameof(Args.Description), args.Description),
             (nameof(Args.Station), args.Station));
         if (missing.Count > 0)
-            return new Result.NeedsDetails(missing);
+            return new Result.NeedsDetails(missing, args);
 
         var item = new FoundItem(
             References.NewItemId(), args.Category!.Trim(), args.Description!.Trim(), args.Station!.Trim(),

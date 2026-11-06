@@ -67,11 +67,14 @@ public abstract class BoxOfficeTests : IAsyncDisposable
     }
 
     [SkippableFact]
-    public async Task BuyingSeatsAsksHowMany()
+    public async Task BuyingSeatsAsksHowManyAndHandsTheLinkBackToFillIn()
     {
-        var link = (await Entry("friday", Callers.Theatregoer)).LinkToBuySeats!;
+        var link = (await Entry("saturday-evening", Callers.Theatregoer)).LinkToBuySeats!;
 
-        Assert.Equal(new[] { "Seats" }, Assert.IsType<BuySeats.Result.NeedsDetails>(await _features.Invoke(link, Callers.Theatregoer)).Missing);
+        var needs = Assert.IsType<BuySeats.Result.NeedsDetails>(await _features.Invoke(link, Callers.Theatregoer));
+
+        Assert.Equal(new[] { "Seats" }, needs.Missing);
+        Assert.IsType<BuySeats.Result.Bought>(await _features.Invoke(needs.LinkToBuySeats with { Seats = 2 }, Callers.Theatregoer));
     }
 
     [SkippableFact]
