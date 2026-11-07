@@ -3,7 +3,7 @@ using Featurewise;
 namespace Demos.LostProperty;
 
 // What's waiting to be claimed from one station, oldest first.
-public class ItemsFoundAt(IFoundItems items) : Query<ItemsFoundAt, ItemsFoundAt.Args, ItemsFoundAt.Result>
+public class ItemsFoundAt(IFoundItems items) : Query<ItemsFoundAt.Args, ItemsFoundAt.Result>
 {
     public record Args(string Station) : Link<ItemsFoundAt, Result>;
 

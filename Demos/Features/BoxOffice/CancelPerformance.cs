@@ -4,7 +4,7 @@ namespace Demos.BoxOffice;
 
 // The box office calls a performance off. Only staff may; Performances offers them the link, and nobody else.
 public class CancelPerformance(IPerformances performances, IChanges changes)
-    : Command<CancelPerformance, CancelPerformance.Args, CancelPerformance.Result>
+    : Command<CancelPerformance.Args, CancelPerformance.Result>
 {
     public record Args(string PerformanceId) : Link<CancelPerformance, Result>;
 

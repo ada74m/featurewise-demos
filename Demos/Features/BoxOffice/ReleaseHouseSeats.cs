@@ -5,7 +5,7 @@ namespace Demos.BoxOffice;
 // The box office puts the seats it held back for the house on sale, so a sold-out performance has seats
 // again. Only staff may.
 public class ReleaseHouseSeats(IPerformances performances, IChanges changes)
-    : Command<ReleaseHouseSeats, ReleaseHouseSeats.Args, ReleaseHouseSeats.Result>
+    : Command<ReleaseHouseSeats.Args, ReleaseHouseSeats.Result>
 {
     public record Args(string PerformanceId) : Link<ReleaseHouseSeats, Result>;
 

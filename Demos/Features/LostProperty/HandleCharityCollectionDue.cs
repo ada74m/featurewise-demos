@@ -5,7 +5,7 @@ namespace Demos.LostProperty;
 
 // The charity collects, on a schedule, everything that has waited unclaimed for three months.
 public class HandleCharityCollectionDue(IFoundItems items, IChanges changes, TimeProvider clock, ILogger<HandleCharityCollectionDue> logger)
-    : Worker<HandleCharityCollectionDue, HandleCharityCollectionDue.Args>
+    : Worker<HandleCharityCollectionDue.Args>
 {
     public static readonly TimeSpan KeptFor = TimeSpan.FromDays(90);
 

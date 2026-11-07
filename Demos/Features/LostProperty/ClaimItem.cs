@@ -5,7 +5,7 @@ namespace Demos.LostProperty;
 // A traveller claims a found item, giving the reference of their report of losing it. The item is theirs
 // if the report is theirs and describes the same kind of thing.
 public class ClaimItem(IFoundItems items, ILostReports reports, IChanges changes, Invocation invocation)
-    : Command<ClaimItem, ClaimItem.Args, ClaimItem.Result>
+    : Command<ClaimItem.Args, ClaimItem.Result>
 {
     public record Args(string ItemId, string Reference) : Link<ClaimItem, Result>;
 

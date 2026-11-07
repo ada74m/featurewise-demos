@@ -5,7 +5,7 @@ namespace Demos.BoxOffice;
 // A theatregoer waits for returns to a sold-out performance. If seats have come free meanwhile, there's
 // nothing to wait for, and it offers them instead.
 public class JoinReturnsQueue(IPerformances performances, IReturnsQueue queue, IChanges changes, Invocation invocation, TimeProvider clock)
-    : Command<JoinReturnsQueue, JoinReturnsQueue.Args, JoinReturnsQueue.Result>
+    : Command<JoinReturnsQueue.Args, JoinReturnsQueue.Result>
 {
     public record Args(string PerformanceId) : Link<JoinReturnsQueue, Result>;
 

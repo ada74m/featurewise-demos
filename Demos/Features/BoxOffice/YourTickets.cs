@@ -5,7 +5,7 @@ namespace Demos.BoxOffice;
 // The caller's tickets, and the performances they're waiting for returns to. A place in a queue offers a
 // link to buy seats as soon as there are some, so the theatregoer needn't go looking.
 public class YourTickets(IBookings bookings, IReturnsQueue queue, IPerformances performances, Invocation invocation)
-    : Query<YourTickets, YourTickets.Args, YourTickets.Result>
+    : Query<YourTickets.Args, YourTickets.Result>
 {
     public record Args : Link<YourTickets, Result>;
 

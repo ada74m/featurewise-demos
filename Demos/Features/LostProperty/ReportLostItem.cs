@@ -6,7 +6,7 @@ namespace Demos.LostProperty;
 // asks for them: invoking it returns NeedsDetails, with the link back, as filled in so far, to complete and
 // follow again.
 public class ReportLostItem(ILostReports reports, IChanges changes, Invocation invocation, TimeProvider clock)
-    : Command<ReportLostItem, ReportLostItem.Args, ReportLostItem.Result>
+    : Command<ReportLostItem.Args, ReportLostItem.Result>
 {
     public record Args(string? Category, string? Description) : Link<ReportLostItem, Result>;
 

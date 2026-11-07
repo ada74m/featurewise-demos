@@ -5,7 +5,7 @@ namespace Demos.LostProperty;
 // The caller's reports of things they lost, newest first. When a handed-in item may be the one a report
 // describes, the report shows it, with a link to claim it while it's still unclaimed.
 public class YourLostReports(ILostReports reports, IFoundItems items, Invocation invocation)
-    : Query<YourLostReports, YourLostReports.Args, YourLostReports.Result>
+    : Query<YourLostReports.Args, YourLostReports.Result>
 {
     public record Args : Link<YourLostReports, Result>;
 

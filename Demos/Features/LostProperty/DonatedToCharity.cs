@@ -3,7 +3,7 @@ using Featurewise;
 namespace Demos.LostProperty;
 
 // What the charity collections have taken: items nobody claimed in time.
-public class DonatedToCharity(IFoundItems items) : Query<DonatedToCharity, DonatedToCharity.Args, DonatedToCharity.Result>
+public class DonatedToCharity(IFoundItems items) : Query<DonatedToCharity.Args, DonatedToCharity.Result>
 {
     public record Args : Link<DonatedToCharity, Result>;
 

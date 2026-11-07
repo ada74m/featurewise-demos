@@ -6,7 +6,7 @@ namespace Demos.BoxOffice;
 // now: buying seats while there are some, joining the returns queue once there aren't, and for staff,
 // cancelling it and releasing its house seats.
 public class Performances(IPerformances performances, IReturnsQueue queue, LinkPermissions permissions, Invocation invocation)
-    : Query<Performances, Performances.Args, Performances.Result>
+    : Query<Performances.Args, Performances.Result>
 {
     public record Args : Link<Performances, Result>;
 

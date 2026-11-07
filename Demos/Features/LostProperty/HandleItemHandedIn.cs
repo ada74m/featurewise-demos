@@ -6,7 +6,7 @@ namespace Demos.LostProperty;
 // When an item is handed in, notes it on every unmatched report of losing the same kind of thing, so
 // those travellers see it in YourLostReports. Running it twice for one item changes nothing more.
 public class HandleItemHandedIn(IFoundItems items, ILostReports reports, IChanges changes, ILogger<HandleItemHandedIn> logger)
-    : Worker<HandleItemHandedIn, HandleItemHandedIn.Args>
+    : Worker<HandleItemHandedIn.Args>
 {
     public record Args(string ItemId) : Link<HandleItemHandedIn, Nil>;
 

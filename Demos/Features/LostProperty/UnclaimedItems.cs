@@ -4,7 +4,7 @@ namespace Demos.LostProperty;
 
 // Everything waiting at the office to be claimed, oldest first, with what a caller may do from here.
 public class UnclaimedItems(IFoundItems items, LinkPermissions permissions)
-    : Query<UnclaimedItems, UnclaimedItems.Args, UnclaimedItems.Result>
+    : Query<UnclaimedItems.Args, UnclaimedItems.Result>
 {
     public record Args : Link<UnclaimedItems, Result>;
 

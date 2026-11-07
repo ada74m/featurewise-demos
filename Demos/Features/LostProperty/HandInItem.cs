@@ -8,7 +8,7 @@ namespace Demos.LostProperty;
 // follow again. Handing an item in raises ItemHandedIn, so that HandleItemHandedIn can look for travellers
 // who reported losing it.
 public class HandInItem(IFoundItems items, IEvents events, IChanges changes, TimeProvider clock)
-    : Command<HandInItem, HandInItem.Args, HandInItem.Result>
+    : Command<HandInItem.Args, HandInItem.Result>
 {
     public record Args(string? Category, string? Description, string? Station) : Link<HandInItem, Result>;
 

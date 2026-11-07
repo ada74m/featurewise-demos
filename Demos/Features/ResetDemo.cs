@@ -4,7 +4,7 @@ namespace Demos;
 
 // Starts a demo again from its seed, forgetting whatever has been done in it, so a visitor can follow
 // its story from the beginning. Any persona may.
-public class ResetDemo(IDemoData data, IChanges changes) : Command<ResetDemo, ResetDemo.Args, ResetDemo.Result>
+public class ResetDemo(IDemoData data, IChanges changes) : Command<ResetDemo.Args, ResetDemo.Result>
 {
     public record Args(string Demo) : Link<ResetDemo, Result>;
 

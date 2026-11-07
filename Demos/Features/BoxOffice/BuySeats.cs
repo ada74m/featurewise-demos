@@ -6,7 +6,7 @@ namespace Demos.BoxOffice;
 // for it, and hands the link back to fill in. Each way it can't be done says what can: buy the seats that are left, join the returns queue, or
 // choose another performance.
 public class BuySeats(IPerformances performances, IBookings bookings, IReturnsQueue queue, IChanges changes, Invocation invocation, TimeProvider clock)
-    : Command<BuySeats, BuySeats.Args, BuySeats.Result>
+    : Command<BuySeats.Args, BuySeats.Result>
 {
     public record Args(string PerformanceId, int? Seats) : Link<BuySeats, Result>;
 
