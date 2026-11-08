@@ -54,7 +54,7 @@ As the `sample` service is (see its `PRINCIPLES.md`), with three additions:
 | `Demos.QueueWorker` | Runs the workers that events trigger, from DynamoDB's stream. |
 | `Demos.SignIn` | The demo sign-in: an OpenID Connect provider with no passwords, where a visitor becomes any persona in `demos.json`. The shell names one in `login_hint` and it's signed in at once; without one, the sign-in shows them all. Tokens are RS256, signed by a KMS key, and carry the visitor's sandbox, from a cookie the sign-in sets on the first visit. It stores nothing: a code is itself a signed token, good for two minutes and only with the PKCE verifier. |
 | `Demos.Local` | Everything in one process, over facilities in memory. |
-| `Demos.Ui` | The module for the UI shell: addresses for the queries, and nothing else. |
+| `Demos.Ui` | The module for the UI shell: an address for each demo's first page, and nothing else. Every other query has the shell's default address. |
 | `Demos.Tests` | The features, over memory and over DynamoDB Local, each entrypoint, and the local host. |
 
 Each project keeps its Terraform in `Infrastructure/`, and the root `Infrastructure/` wires them together. `package.sh` builds the package an environment uses, and CI publishes it as `demos/<version>`.

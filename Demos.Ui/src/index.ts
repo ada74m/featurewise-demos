@@ -1,21 +1,16 @@
 import type { Link, ServiceModule } from "./shell";
 
-// The demos' module. It gives the demos' queries addresses, each starting with its demo's name, as in
-// "lost-property/unclaimed-items" and "box-office/performances", and handles no results itself: the demos show the shell's generic
-// renderer, so the links appearing and disappearing are what a visitor sees.
+// The demos' module. It gives each demo's first page an address starting with the demo's name, as in
+// "lost-property/unclaimed-items", where the book and the shell's default link to, and nothing else:
+// every other query gets the shell's default address, and every result the shell's generic renderer,
+// so the links appearing and disappearing are what a visitor sees.
 
 const feature = (name: string) => `demos/${name}`;
 
-// A query with no arguments has a fixed address.
-const fixed: Record<string, string> = {
+const entrances: Record<string, string> = {
   "lost-property/unclaimed-items": feature("UnclaimedItems"),
-  "lost-property/donated-to-charity": feature("DonatedToCharity"),
-  "lost-property/your-lost-reports": feature("YourLostReports"),
-  "box-office/performances": feature("Performances"),
-  "box-office/your-tickets": feature("YourTickets")
+  "box-office/performances": feature("Performances")
 };
-
-const foundAt = "lost-property/found-at/";
 
 const demos: ServiceModule = {
   addressToLink(address) {
@@ -24,21 +19,11 @@ const demos: ServiceModule = {
       return { $feature: feature("UnclaimedItems") };
     if (path === "box-office")
       return { $feature: feature("Performances") };
-    if (fixed[path])
-      return { $feature: fixed[path] };
-    if (path.startsWith(foundAt) && path.length > foundAt.length)
-      return { $feature: feature("ItemsFoundAt"), Station: decodeURIComponent(path.slice(foundAt.length)) };
-    return null;
+    return entrances[path] ? { $feature: entrances[path] } : null;
   },
 
-  linkToAddress(link: Link) {
-    const address = Object.entries(fixed).find(([, named]) => named === link.$feature)?.[0];
-    if (address)
-      return address;
-    if (link.$feature === feature("ItemsFoundAt") && typeof link.Station === "string")
-      return foundAt + encodeURIComponent(link.Station);
-    return null;
-  },
+  linkToAddress: (link: Link) =>
+    Object.entries(entrances).find(([, named]) => named === link.$feature)?.[0] ?? null,
 
   render: () => null
 };
