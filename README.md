@@ -2,9 +2,9 @@
 
 Small, live demos of the ideas in *Featurewise Organisation*, each in a micro-domain of its own. They're one Featurewise service, `demos`, shown through the UI shell's generic renderer, so what a visitor sees is the features' own output: their result cases, and the links appearing and disappearing as the persona changes. The book's code samples come from here.
 
-Built so far: the lost property office, for chapter 1, and the theatre box office, for chapter 4.
+Built so far: the lost property office, for chapters 1 and 3, and the theatre box office, for chapters 5 and 6.
 
-## The lost property office (chapter 1)
+## The lost property office (chapters 1 and 3)
 
 A railway station's lost property office, showing a feature as a whole job, a command beside a query, both kinds of worker, result cases, and naming for each family.
 
@@ -22,7 +22,7 @@ A railway station's lost property office, showing a feature as a whole job, a co
 
 The personas are a traveller, who has already reported losing an umbrella, and a clerk. Hand in an umbrella as the clerk, switch to the traveller, and `YourLostReports` shows it, with a link to claim it.
 
-## The theatre box office (chapter 4)
+## The theatre box office (chapters 5 and 6)
 
 A small theatre's box office, selling seats for the four performances of *The Pirates of Penge*. It shows links offered only when they'd work, by the state of things and by who's asking, links that bring the next step to you, and result cases that turn an obstacle into a way forward.
 
