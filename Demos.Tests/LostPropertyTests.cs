@@ -212,6 +212,51 @@ public abstract class LostPropertyTests : IAsyncDisposable
     }
 
     [SkippableFact]
+    public async Task ALossReportedAfterTheItemWasHandedInIsMatchedAtOnce()
+    {
+        var handedIn = await HandInUmbrella();
+
+        var mayHave = Assert.IsType<ReportLostItem.Result.MayAlreadyHaveIt>(await _features.Invoke(
+            new ReportLostItem.Args("Umbrella", "Black, with a duck's head handle"), Callers.OtherTraveller));
+
+        Assert.Equal(handedIn.Item.Id, mayHave.Item.Id);
+        Assert.Equal(new ClaimItem.Args(handedIn.Item.Id, mayHave.Report.Reference), mayHave.LinkToClaim);
+        var report = Assert.Single((await _features.Invoke(mayHave.LinkToYourReports, Callers.OtherTraveller)).Reports);
+        Assert.Equal(handedIn.Item.Id, report.PossibleMatch?.Id);
+        Assert.IsType<ClaimItem.Result.Claimed>(await _features.Invoke(mayHave.LinkToClaim, Callers.OtherTraveller));
+    }
+
+    [SkippableFact]
+    public async Task AReportedLossIsMatchedToTheItemHandedInFirst()
+    {
+        await _features.Invoke(new HandInItem.Args("Glove", "One right glove, red wool", "Crewe"), Callers.Clerk);
+
+        var mayHave = Assert.IsType<ReportLostItem.Result.MayAlreadyHaveIt>(
+            await _features.Invoke(new ReportLostItem.Args("Glove", "Red wool"), Callers.OtherTraveller));
+
+        Assert.Equal("F-000001", mayHave.Item.Id);
+    }
+
+    [SkippableFact]
+    public async Task AReportWhoseMatchWentToSomeoneElseIsMatchedAgain()
+    {
+        var first = await HandInUmbrella();
+        await _features.Invoke(new HandleItemHandedIn.Args(first.Item.Id), Callers.Job);
+        var theirs = Assert.IsType<ReportLostItem.Result.MayAlreadyHaveIt>(await _features.Invoke(
+            new ReportLostItem.Args("Umbrella", "Green, folding"), Callers.OtherTraveller));
+        Assert.IsType<ClaimItem.Result.Claimed>(await _features.Invoke(theirs.LinkToClaim, Callers.OtherTraveller));
+
+        var second = await HandInUmbrella();
+        await _features.Invoke(new HandleItemHandedIn.Args(second.Item.Id), Callers.Job);
+
+        var mine = Assert.Single((await _features.Invoke(new YourLostReports.Args(), Callers.Traveller)).Reports);
+        Assert.Equal(second.Item.Id, mine.PossibleMatch?.Id);
+        Assert.Equal(new ClaimItem.Args(second.Item.Id, "R-000001"), mine.LinkToClaim);
+        var claimed = Assert.Single((await _features.Invoke(new YourLostReports.Args(), Callers.OtherTraveller)).Reports);
+        Assert.Equal(first.Item.Id, claimed.PossibleMatch?.Id);
+    }
+
+    [SkippableFact]
     public async Task ReportingALossNeedsEveryDetail()
     {
         var result = await _features.Invoke(new ReportLostItem.Args(null, " "), Callers.Traveller);

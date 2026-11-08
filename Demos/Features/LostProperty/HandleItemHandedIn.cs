@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Demos.LostProperty;
 
-// When an item is handed in, notes it on every unmatched report of losing the same kind of thing, so
+// When an item is handed in, notes it on every report still looking for the same kind of thing, so
 // those travellers see it in YourLostReports. Running it twice for one item changes nothing more.
 public class HandleItemHandedIn(IFoundItems items, ILostReports reports, IChanges changes, ILogger<HandleItemHandedIn> logger)
     : Worker<HandleItemHandedIn.Args>
@@ -15,11 +15,12 @@ public class HandleItemHandedIn(IFoundItems items, ILostReports reports, IChange
         if (await items.Find(args.ItemId, cancellationToken) is not { Status: ItemStatus.Unclaimed } item)
             return Nil.Value;
 
+        var all = (await items.All(cancellationToken)).ToDictionary(found => found.Id);
         var matched = 0;
         foreach (var report in await reports.All(cancellationToken))
         {
-            if (report.MatchedItemId is null
-                && string.Equals(report.Category, item.Category, StringComparison.OrdinalIgnoreCase))
+            var match = report.MatchedItemId is { } id ? all.GetValueOrDefault(id) : null;
+            if (report.MatchedItemId != item.Id && Matches.IsLooking(report, match) && Matches.Fits(report, item))
             {
                 reports.Match(report, item.Id);
                 matched++;

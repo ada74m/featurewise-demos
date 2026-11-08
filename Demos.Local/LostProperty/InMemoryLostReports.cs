@@ -22,7 +22,7 @@ public class InMemoryLostReports(SandboxedTables tables, InMemoryChanges changes
     {
         var reports = Reports;
         changes.Stage(
-            () => reports[report.Reference] is { MatchedItemId: null },
+            () => reports[report.Reference] is { } current && current.MatchedItemId == report.MatchedItemId,
             () => reports.Put(report.Reference, report with { MatchedItemId = itemId }));
     }
 }

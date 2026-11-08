@@ -15,5 +15,7 @@ public class DynamoLostReports(DynamoTables tables, TimeProvider clock) : ILostR
     public void Add(LostReport report) => Reports.Add(report.Reference, report);
 
     public void Match(LostReport report, string itemId) =>
-        Reports.Replace(report.Reference, report with { MatchedItemId = itemId }, DynamoCondition.FieldIsNull(nameof(LostReport.MatchedItemId)));
+        Reports.Replace(report.Reference, report with { MatchedItemId = itemId }, report.MatchedItemId is { } matched
+            ? DynamoCondition.FieldEquals(nameof(LostReport.MatchedItemId), matched)
+            : DynamoCondition.FieldIsNull(nameof(LostReport.MatchedItemId)));
 }

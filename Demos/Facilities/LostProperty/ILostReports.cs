@@ -12,7 +12,7 @@ public interface ILostReports
     // Stages keeping a new report, on condition that no report has its reference.
     void Add(LostReport report);
 
-    // Stages noting that the item may be the one the report describes, on condition that the report
-    // hasn't been matched already.
+    // Stages noting that the item may be the one the report describes, on condition that the report's
+    // match is still the one it had when it was read.
     void Match(LostReport report, string itemId);
 }

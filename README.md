@@ -15,12 +15,12 @@ A railway station's lost property office, showing a feature as a whole job, a co
 | `YourLostReports` | Query | The caller's reports, each with any item that may be theirs, and a link to claim it |
 | `DonatedToCharity` | Query | What the charity collections took |
 | `HandInItem` | Command | A clerk logs a found item. Returns `HandedIn`, or `NeedsDetails` with the link back to complete |
-| `ReportLostItem` | Command | A traveller describes what they lost. Returns `Reported`, or `NeedsDetails` with the link back to complete |
+| `ReportLostItem` | Command | A traveller describes what they lost. Returns `Reported`; `MayAlreadyHaveIt`, with a link to claim the item, if the office already has something like it; or `NeedsDetails` with the link back to complete |
 | `ClaimItem` | Command | `Claimed`, `AlreadyClaimed`, `DoesntMatchReport` (with the link back to try another reference, and one to the traveller's reports) or `NotFound` |
-| `HandleItemHandedIn` | Worker, on the event `ItemHandedIn` | Notes the item on every unmatched report of the same kind of thing |
+| `HandleItemHandedIn` | Worker, on the event `ItemHandedIn` | Notes the item on every report still looking for the same kind of thing |
 | `HandleCharityCollectionDue` | Worker, on a schedule | Gives away everything unclaimed for three months |
 
-The personas are a traveller, who has already reported losing an umbrella, and a clerk. Hand in an umbrella as the clerk, switch to the traveller, and `YourLostReports` shows it, with a link to claim it.
+The personas are a traveller, who has already reported losing an umbrella, and a clerk. Hand in an umbrella as the clerk, switch to the traveller, and `YourLostReports` shows it, with a link to claim it. Matching works in either order: a report of something already handed in is matched as it's made. Both `HandleItemHandedIn` and `ReportLostItem` apply the rule in `Matches`, under which a report is still looking until its traveller claims its match, so a report whose match went to someone else or to charity is matched again.
 
 ## The theatre box office (chapters 5 and 6)
 
