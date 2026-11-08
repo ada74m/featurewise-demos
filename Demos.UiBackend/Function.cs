@@ -95,7 +95,9 @@ public class Function
         try
         {
             var result = await _features.Invoke(link, JwtCaller.From(request), idempotencyKey, timeout.Token);
-            return Response(HttpStatusCode.OK, JsonSerializer.Serialize(result, _json));
+            // The feature's family, so the UI gives a query an address, and never a command.
+            return Response(HttpStatusCode.OK, JsonSerializer.Serialize(result, _json),
+                headers: ("featurewise-family", _features.FamilyOf(qualified)!.Value.ToString().ToLowerInvariant()));
         }
         catch (InvocationDeniedException denied)
         {

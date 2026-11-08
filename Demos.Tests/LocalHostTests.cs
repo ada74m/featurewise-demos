@@ -31,6 +31,16 @@ public class LocalHostTests : IDisposable
     }
 
     [Fact]
+    public async Task AResultSaysWhichFamilyTheFeatureThatAnsweredBelongsTo()
+    {
+        var query = await Send("UnclaimedItems", Clerk, "{}");
+        var command = await Send("HandInItem", Clerk, """{"Category":"Hat","Description":"A trilby","Station":"Leeds"}""");
+
+        Assert.Equal(["query"], query.Headers.GetValues("featurewise-family"));
+        Assert.Equal(["command"], command.Headers.GetValues("featurewise-family"));
+    }
+
+    [Fact]
     public async Task ATravellerHearsOfAnItemSoonAfterAClerkHandsItIn()
     {
         var handedIn = await Post("HandInItem", Clerk, """{"Category":"Umbrella","Description":"Black","Station":"Crewe"}""");
@@ -81,7 +91,10 @@ public class LocalHostTests : IDisposable
 
     private const string Clerk = """{"username":"clerk","cognito:groups":["clerk"]}""";
 
-    private async Task<JsonNode> Post(string feature, string claims, string body)
+    private async Task<JsonNode> Post(string feature, string claims, string body) =>
+        JsonNode.Parse(await (await Send(feature, claims, body)).Content.ReadAsStringAsync())!;
+
+    private async Task<HttpResponseMessage> Send(string feature, string claims, string body)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, $"/api/demos/{feature}")
         {
@@ -90,7 +103,7 @@ public class LocalHostTests : IDisposable
         request.Headers.Authorization = Token(claims);
         var response = await _client.SendAsync(request);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        return JsonNode.Parse(await response.Content.ReadAsStringAsync())!;
+        return response;
     }
 
     private static AuthenticationHeaderValue Token(string claims) =>
