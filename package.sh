@@ -1,39 +1,71 @@
 #!/usr/bin/env bash
-# Builds the demos service's package for a version: its Terraform module and the zip of each function it
-# deploys, as <out-dir>/demos-<version>.zip, with the same contents unpacked in <out-dir>/demos. An
-# environment uses it as source = "s3::https://.../demos/<version>.zip//Infrastructure".
+# Builds a package for each demo service, and one for the demo sign-in, all at one version, as
+# <out-dir>/<package>-<version>.zip, with the same contents unpacked in <out-dir>/<package>. Each package
+# keeps the repository's layout, so its modules find Common's by the same relative paths, and carries the
+# zip of each function it deploys in functions/. An environment uses one as
+# source = "s3::https://.../demos/<package>/<version>.zip//<Folder>/Infrastructure".
 set -euo pipefail
 version=${1:?usage: package.sh <version> <out-dir>}
 mkdir -p "${2:?usage: package.sh <version> <out-dir>}"
 out=$(cd "$2" && pwd)
 cd "$(dirname "$0")"
 
-package="$out/demos"
-rm -rf "$package" "$out/publish" "$out/demos-$version.zip"
-mkdir -p "$package/functions"
+rm -rf "$out/publish"
 
-# The module for the UI shell, which the package uploads to the shell's bucket.
-(cd Demos.Ui && npm ci --silent && npm run --silent build)
-mkdir -p "$package/Demos.Ui/dist"
-rsync -a Demos.Ui/dist/ "$package/Demos.Ui/dist/"
-
-for project in Demos.UiBackend SignIn/Demos.SignIn; do
+# Publishes a project for Lambda, as <out-dir>/publish/<project>.zip.
+publish() {
+  local project=$1 name
   name=$(basename "$project")
   dotnet publish "$project" -c Release -r linux-arm64 --self-contained false \
     -o "$out/publish/$name" --nologo -v quiet
-  (cd "$out/publish/$name" && zip -qrX "$package/functions/$name.zip" .)
-done
+  (cd "$out/publish/$name" && zip -qrX "$out/publish/$name.zip" .)
+}
 
-# The modules keep their places relative to each other, as their sources refer to each other by path.
-for module in Infrastructure Common/Infrastructure SignIn/Infrastructure; do
-  mkdir -p "$package/$module"
-  rsync -a --include='*/' --include='*.tf' --exclude='*' --prune-empty-dirs "$module/" "$package/$module/"
-done
+# Copies a folder's Terraform, keeping its place in the repository.
+terraform_of() {
+  local package=$1 folder=$2
+  mkdir -p "$package/$folder"
+  rsync -a --include='*/' --include='*.tf' --exclude='*' --prune-empty-dirs "$folder/" "$package/$folder/"
+}
 
-# The demos, with their personas, which the module's demos output reads.
-cp demos.json "$package/"
-mkdir -p "$package/LostProperty" && cp LostProperty/demo.json "$package/LostProperty/"
+# Zips a package's folder as <out-dir>/<name>-<version>.zip.
+finish() {
+  local name=$1
+  echo "$version" > "$out/$name/VERSION"
+  rm -f "$out/$name-$version.zip"
+  (cd "$out/$name" && zip -qrX "$out/$name-$version.zip" .)
+  echo "$out/$name-$version.zip"
+}
 
-echo "$version" > "$package/VERSION"
-(cd "$package" && zip -qrX "$out/demos-$version.zip" .)
-echo "$out/demos-$version.zip"
+# A demo: its functions, its module for the UI shell, its Terraform with Common's, and its description.
+demo() {
+  local name=$1 folder=$2 project=$3
+  local package="$out/$name"
+  rm -rf "$package"
+  mkdir -p "$package/functions"
+
+  publish "$folder/$project.Functions"
+  cp "$out/publish/$project.Functions.zip" "$package/functions/"
+
+  (cd "$folder/$project.Ui" && npm ci --silent && npm run --silent build)
+  mkdir -p "$package/$folder/$project.Ui/dist"
+  rsync -a "$folder/$project.Ui/dist/" "$package/$folder/$project.Ui/dist/"
+
+  terraform_of "$package" Common/Infrastructure
+  terraform_of "$package" "$folder/Infrastructure"
+  cp "$folder/demo.json" "$package/$folder/"
+  finish "$name"
+}
+
+demo lost-property LostProperty Demos.LostProperty
+demo box-office BoxOffice Demos.BoxOffice
+
+# The demo sign-in: its function and its Terraform, with the Lambda module it uses from Common.
+package="$out/sign-in"
+rm -rf "$package"
+mkdir -p "$package/functions"
+publish SignIn/Demos.SignIn
+cp "$out/publish/Demos.SignIn.zip" "$package/functions/"
+terraform_of "$package" Common/Infrastructure/modules/lambda-function
+terraform_of "$package" SignIn/Infrastructure
+finish sign-in

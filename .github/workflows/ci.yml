@@ -1,5 +1,6 @@
-# Builds and tests the demos service on every pull request and push to main, and checks its Terraform. Each push to main also publishes the service's package, versioned by date
-# and run, to the estate's artifacts bucket, and tags the commit with that version.
+# Builds and tests every demo service and the demo sign-in on every pull request and push to main, and
+# checks their Terraform. Each push to main also publishes their packages, all at one version, by date
+# and run, to the estate's artifacts bucket under demos/<package>/, and tags the commit with that version.
 name: CI
 
 on:
@@ -50,11 +51,13 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: Demos.Ui/package-lock.json
+          cache-dependency-path: "*/Demos.*.Ui/package-lock.json"
 
-      - name: Test and build the UI module
-        working-directory: Demos.Ui
-        run: npm ci && npm test && npm run build
+      - name: Test and build each demo's module
+        run: |
+          for module in */Demos.*.Ui; do
+            (cd "$module" && npm ci && npm test && npm run build)
+          done
 
       - uses: hashicorp/setup-terraform@v4
         with:
@@ -63,9 +66,11 @@ jobs:
       - name: Check Terraform formatting
         run: terraform fmt -check -recursive .
 
-      - name: Validate the service module
-        working-directory: Infrastructure
-        run: terraform init -backend=false -input=false && terraform validate
+      - name: Validate each package's module
+        run: |
+          for module in LostProperty/Infrastructure BoxOffice/Infrastructure SignIn/Infrastructure; do
+            (cd "$module" && terraform init -backend=false -input=false && terraform validate)
+          done
 
       # Pull requests get a version too, so their package can be inspected, but only main's are published.
       - name: Choose a version
@@ -83,7 +88,7 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: demos-${{ steps.version.outputs.version }}
-          path: out/demos-${{ steps.version.outputs.version }}.zip
+          path: out/*-${{ steps.version.outputs.version }}.zip
           if-no-files-found: error
 
   # Needs the estate's bootstrap: the repository variables AWS_REGION, ARTIFACTS_BUCKET and
@@ -109,8 +114,12 @@ jobs:
           role-to-assume: ${{ vars.PUBLISH_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
 
-      - name: Publish the package
-        run: aws s3 cp "demos-$VERSION.zip" "s3://${{ vars.ARTIFACTS_BUCKET }}/demos/$VERSION.zip" --no-progress
+      # The publish role may write only under demos/, so each package is published there.
+      - name: Publish the packages
+        run: |
+          for package in lost-property box-office sign-in; do
+            aws s3 cp "$package-$VERSION.zip" "s3://${{ vars.ARTIFACTS_BUCKET }}/demos/$package/$VERSION.zip" --no-progress
+          done
 
       - name: Tag the commit
         run: |

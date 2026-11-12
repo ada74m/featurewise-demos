@@ -11,7 +11,7 @@ dotnet test                                      # run all tests; the DynamoDB o
                                                  # and docker run -d -p 8000:8000 amazon/dynamodb-local, or they're skipped
 dotnet run --project Demos.Local                 # run every demo locally; needs each module and ../ui built
 cd LostProperty/Demos.LostProperty.Ui && npm test && npm run build   # a demo's module
-./package.sh <version> out                       # build the package
+./package.sh <version> out                       # build the packages: lost-property, box-office and sign-in
 terraform fmt -check -recursive .
 ```
 
