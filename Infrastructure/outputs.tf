@@ -9,7 +9,7 @@ output "sign_in" {
 
 output "demos" {
   description = "Each demo: its title, its text, its personas and its reset link, for the UI shell's demos input."
-  value       = jsondecode(file("${path.module}/../demos.json"))
+  value       = local.demos
 }
 
 output "table_name" {

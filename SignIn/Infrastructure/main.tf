@@ -33,6 +33,8 @@ module "function" {
     CLIENT_ID    = local.client_id
     REDIRECT_URI = "${var.shell_url}/_shell/callback"
     LOGOUT_URI   = "${var.shell_url}/"
+    # Each demo's id and personas, which the sign-in offers.
+    DEMOS = jsonencode([for demo in var.demos : { id = demo.id, personas = demo.personas }])
   }
 }
 

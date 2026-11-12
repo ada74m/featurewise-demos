@@ -36,7 +36,7 @@ public class Function
     public Function() : this(
         new KmsSigner(new AmazonKeyManagementServiceClient(), Setting("KEY_ID")),
         new Settings(Setting("CLIENT_ID"), Setting("REDIRECT_URI"), Setting("LOGOUT_URI")),
-        Persona.Load(Path.Combine(AppContext.BaseDirectory, "demos.json")),
+        Persona.Read(Setting("DEMOS")),
         TimeProvider.System)
     {
     }

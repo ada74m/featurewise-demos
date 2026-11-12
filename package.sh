@@ -17,14 +17,15 @@ mkdir -p "$package/functions"
 mkdir -p "$package/Demos.Ui/dist"
 rsync -a Demos.Ui/dist/ "$package/Demos.Ui/dist/"
 
-for project in UiBackend ScheduledWorker QueueWorker SignIn; do
-  dotnet publish "Demos.$project" -c Release -r linux-arm64 --self-contained false \
-    -o "$out/publish/Demos.$project" --nologo -v quiet
-  (cd "$out/publish/Demos.$project" && zip -qrX "$package/functions/Demos.$project.zip" .)
+for project in Demos.UiBackend Demos.ScheduledWorker Demos.QueueWorker SignIn/Demos.SignIn; do
+  name=$(basename "$project")
+  dotnet publish "$project" -c Release -r linux-arm64 --self-contained false \
+    -o "$out/publish/$name" --nologo -v quiet
+  (cd "$out/publish/$name" && zip -qrX "$package/functions/$name.zip" .)
 done
 
 # The modules keep their places relative to each other, as their sources refer to each other by path.
-for module in Infrastructure Common/Infrastructure Demos.SignIn/Infrastructure; do
+for module in Infrastructure Common/Infrastructure SignIn/Infrastructure; do
   mkdir -p "$package/$module"
   rsync -a --include='*/' --include='*.tf' --exclude='*' --prune-empty-dirs "$module/" "$package/$module/"
 done

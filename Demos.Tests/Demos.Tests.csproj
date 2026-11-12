@@ -8,6 +8,11 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <!-- The demos and their personas, which the sign-in's tests offer. -->
+        <None Include="..\demos.json" Link="demos.json" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Amazon.Lambda.TestUtilities" Version="4.3.0" />
         <PackageReference Include="coverlet.collector" Version="6.0.4" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.14" />
@@ -22,7 +27,7 @@
         <ProjectReference Include="..\Demos\Demos.csproj" />
         <ProjectReference Include="..\Demos.Local\Demos.Local.csproj" />
         <ProjectReference Include="..\Demos.Aws\Demos.Aws.csproj" />
-        <ProjectReference Include="..\Demos.SignIn\Demos.SignIn.csproj" />
+        <ProjectReference Include="..\SignIn\Demos.SignIn\Demos.SignIn.csproj" />
     </ItemGroup>
 
     <ItemGroup>

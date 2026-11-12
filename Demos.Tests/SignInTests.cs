@@ -22,7 +22,7 @@ public class SignInTests
         _signIn = new Function(
             new LocalSigner(),
             new Settings("shell", $"{Shell}/_shell/callback", $"{Shell}/"),
-            Persona.Load("demos.json"),
+            Persona.Read(File.ReadAllText("demos.json")),
             _clock);
 
     [Fact]

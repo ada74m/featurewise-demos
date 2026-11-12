@@ -7,7 +7,7 @@
   <Project Path="Demos.Local/Demos.Local.csproj" />
   <Project Path="Demos.QueueWorker/Demos.QueueWorker.csproj" />
   <Project Path="Demos.ScheduledWorker/Demos.ScheduledWorker.csproj" />
-  <Project Path="Demos.SignIn/Demos.SignIn.csproj" />
+  <Project Path="SignIn/Demos.SignIn/Demos.SignIn.csproj" />
   <Project Path="Demos.Tests/Demos.Tests.csproj" />
   <Project Path="Demos.UiBackend/Demos.UiBackend.csproj" />
   <Project Path="Demos/Demos.csproj" />

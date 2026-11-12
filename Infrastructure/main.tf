@@ -10,6 +10,9 @@ locals {
   # Every resource is named <environment>-<service>-<what it is>, so services sharing an environment,
   # and the UI shell beside them, never take each other's names.
   name_prefix = "${var.name_prefix}-${local.service}"
+
+  # Each demo: its title, its text, its personas and its reset link.
+  demos = jsondecode(file("${path.module}/../demos.json"))
 }
 
 module "aws" {
@@ -20,10 +23,11 @@ module "aws" {
 
 # Visitors sign in as the demos' personas, which demos.json lists, with no passwords.
 module "sign_in" {
-  source = "../Demos.SignIn/Infrastructure"
+  source = "../SignIn/Infrastructure"
 
   name_prefix = local.name_prefix
   shell_url   = var.shell_url
+  demos       = local.demos
 }
 
 module "ui_backend" {
