@@ -77,3 +77,19 @@ resource "aws_lambda_permission" "api" {
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_apigatewayv2_api.sign_in.execution_arn}/*/*"
 }
+
+# Waits until the sign-in answers its discovery document, which also starts its function. API Gateway
+# fetches that document when an authorizer naming the issuer is saved, and gives up quickly, so a function
+# that has never run can fail the save. The issuer output waits for this.
+resource "terraform_data" "answering" {
+  triggers_replace = [aws_apigatewayv2_stage.default.id, module.function.function_arn]
+
+  provisioner "local-exec" {
+    command = "for attempt in $(seq 1 30); do curl -sf -o /dev/null \"$DISCOVERY\" && exit 0; sleep 2; done; echo \"the sign-in never answered $DISCOVERY\" >&2; exit 1"
+    environment = {
+      DISCOVERY = "${aws_apigatewayv2_api.sign_in.api_endpoint}/.well-known/openid-configuration"
+    }
+  }
+
+  depends_on = [aws_apigatewayv2_route.routes, aws_lambda_permission.api]
+}

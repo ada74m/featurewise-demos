@@ -4,7 +4,7 @@ output "issuer" {
 
   # API Gateway reads the issuer's discovery document when an authorizer naming it is saved, so nothing
   # may use the issuer until the sign-in answers.
-  depends_on = [aws_apigatewayv2_route.routes, aws_apigatewayv2_stage.default, aws_lambda_permission.api]
+  depends_on = [terraform_data.answering]
 }
 
 output "client_id" {
