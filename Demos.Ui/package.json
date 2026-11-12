@@ -2,7 +2,7 @@
   "name": "demos-ui",
   "private": true,
   "type": "module",
-  "description": "The demos' module for the Featurewise UI shell: addresses only, so every page is the shell's generic renderer.",
+  "description": "The box office's module for the Featurewise UI shell: the entrance's address only, so every page is the shell's generic renderer.",
   "scripts": {
     "build": "tsc --noEmit && vite build",
     "test": "vitest run"

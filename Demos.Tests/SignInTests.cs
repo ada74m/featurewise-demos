@@ -15,6 +15,14 @@ public class SignInTests
     private const string Domain = "signin.example";
     private const string Shell = "https://shell.example";
 
+    // The demos and their personas, as the environment passes them in DEMOS.
+    private const string Demos = """
+        [
+          { "id": "lost-property", "personas": [{ "id": "traveller", "label": "Traveller" }, { "id": "clerk", "label": "Clerk", "groups": ["clerk"] }] },
+          { "id": "box-office", "personas": [{ "id": "theatregoer", "label": "Theatregoer" }] }
+        ]
+        """;
+
     private readonly FakeTimeProvider _clock = new(new DateTimeOffset(2026, 11, 5, 9, 0, 0, TimeSpan.Zero));
     private readonly Function _signIn;
 
@@ -22,7 +30,7 @@ public class SignInTests
         _signIn = new Function(
             new LocalSigner(),
             new Settings("shell", $"{Shell}/_shell/callback", $"{Shell}/"),
-            Persona.Read(File.ReadAllText("demos.json")),
+            Persona.Read(Demos),
             _clock);
 
     [Fact]

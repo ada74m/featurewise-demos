@@ -1,5 +1,5 @@
 using Demos.BoxOffice;
-using Demos.LostProperty;
+using Demos.Testing;
 using Featurewise;
 
 namespace Demos.Tests;
@@ -10,15 +10,6 @@ public static class ServiceFeatures
     public static Features Over(ITestFacilities fakes) =>
         new Features(Service.Id)
             .RegisterFeature<ResetDemo, AnySignedInCaller<ResetDemo.Args>>()
-            .RegisterFeature<UnclaimedItems, AnySignedInCaller<UnclaimedItems.Args>>()
-            .RegisterFeature<ItemsFoundAt, AnySignedInCaller<ItemsFoundAt.Args>>()
-            .RegisterFeature<DonatedToCharity, AnySignedInCaller<DonatedToCharity.Args>>()
-            .RegisterFeature<YourLostReports, AnySignedInCaller<YourLostReports.Args>>()
-            .RegisterFeature<HandInItem, HandInItem.Rule>()
-            .RegisterFeature<ReportLostItem, AnySignedInCaller<ReportLostItem.Args>>()
-            .RegisterFeature<ClaimItem, AnySignedInCaller<ClaimItem.Args>>()
-            .RegisterFeature<HandleItemHandedIn, AnySystemCaller<HandleItemHandedIn.Args>>()
-            .RegisterFeature<HandleCharityCollectionDue, AnySystemCaller<HandleCharityCollectionDue.Args>>()
             .RegisterFeature<Performances, AnySignedInCaller<Performances.Args>>()
             .RegisterFeature<YourTickets, AnySignedInCaller<YourTickets.Args>>()
             .RegisterFeature<BuySeats, AnySignedInCaller<BuySeats.Args>>()

@@ -73,7 +73,7 @@ public class LocalHostTests : IDisposable
     [Fact]
     public async Task WithoutATokenTheUiBackendSaysToSignIn()
     {
-        var response = await _client.PostAsync("/api/demos/UnclaimedItems", null);
+        var response = await _client.PostAsync("/api/lost-property/UnclaimedItems", null);
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
@@ -96,7 +96,7 @@ public class LocalHostTests : IDisposable
 
     private async Task<HttpResponseMessage> Send(string feature, string claims, string body)
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, $"/api/demos/{feature}")
+        var request = new HttpRequestMessage(HttpMethod.Post, $"/api/lost-property/{feature}")
         {
             Content = new StringContent(body, Encoding.UTF8, "application/json")
         };

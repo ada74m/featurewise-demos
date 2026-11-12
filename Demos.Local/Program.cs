@@ -1,26 +1,27 @@
 using System.Text;
 using System.Text.Json.Nodes;
 using Amazon.Lambda.APIGatewayEvents;
-using Demos;
 using Demos.Local;
+using Demos.LostProperty.Functions;
 using Microsoft.Extensions.FileProviders;
-using QueueWorker = Demos.QueueWorker.Function;
-using ScheduledWorker = Demos.ScheduledWorker.Function;
-using UiBackend = Demos.UiBackend.Function;
+using BoxOfficeBackend = Demos.UiBackend.Function;
+using LostProperty = Demos.LostProperty;
 
-// Runs every demo in one process, over facilities in memory, so they can be used without deploying them.
-// Each request becomes the event API Gateway would send the deployed function, and goes to the same
-// Function class, so the code under test locally is the code that's deployed:
+// Runs every demo in one process, each a service over facilities in memory of its own, so they can be
+// used without deploying them. Each request becomes the event API Gateway would send the deployed
+// function, and goes to the same class, so the code under test locally is the code that's deployed:
 //
-//   POST /api/demos/{feature}          the UI backend, as the UI shell will reach it through CloudFront
-//   GET  /api/demos/{feature}?link=    the UI backend, for queries
-//   POST /jobs                         runs the job whose link is the body, as a schedule would
+//   POST /api/<service>/{feature}        a service's UI backend, as the UI shell reaches it through CloudFront
+//   GET  /api/<service>/{feature}?link=  the same, for queries
+//   POST /jobs                           runs the lost property office's job whose link is the body, as a
+//                                        schedule would
 //
-// It also serves the UI, as CloudFront will in AWS, all from one origin, so there's no CORS:
+// The services are lost-property and, until the box office becomes a service of its own, demos. It also
+// serves the UI, as CloudFront will in AWS, all from one origin, so there's no CORS:
 //
-//   GET  /services.json                the shell's configuration, with the demos in ../demos.json
-//   GET  /modules/demos/...            the demos' module, built in Demos.Ui/dist
-//   GET  anything else                 the shell, from a sibling checkout of featurewise-ui, ../ui/dist
+//   GET  /services.json                  the shell's configuration, with each demo's description
+//   GET  /modules/<service>/...          each service's module, from its dist folder
+//   GET  anything else                   the shell, from a sibling checkout of featurewise-ui, ../ui/dist
 //
 // Events committed to the outbox go to the queue worker as soon as they arrive, as DynamoDB's stream
 // would deliver them, and the charity collects every minute rather than every day, so its effect shows.
@@ -29,29 +30,44 @@ using UiBackend = Demos.UiBackend.Function;
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
-// Where the built shell and module are, which the settings ShellFiles and ModuleFiles can change.
-var shellDirectory = Path.GetFullPath(builder.Configuration["ShellFiles"] ?? Path.Combine(builder.Environment.ContentRootPath, "../../ui/dist"));
-var moduleDirectory = Path.GetFullPath(builder.Configuration["ModuleFiles"] ?? Path.Combine(builder.Environment.ContentRootPath, "../Demos.Ui/dist"));
+// Where the built shell and modules are; the setting ShellFiles can change the shell's.
+var root = builder.Environment.ContentRootPath;
+var shellDirectory = Path.GetFullPath(builder.Configuration["ShellFiles"] ?? Path.Combine(root, "../../ui/dist"));
+var modules = new Dictionary<string, string>
+{
+    [LostProperty.Service.Id] = Path.GetFullPath(Path.Combine(root, "../LostProperty/Demos.LostProperty.Ui/dist")),
+    [Demos.Service.Id] = Path.GetFullPath(Path.Combine(root, "../Demos.Ui/dist"))
+};
 
-if (Directory.Exists(moduleDirectory))
-    app.UseStaticFiles(new StaticFileOptions { FileProvider = new PhysicalFileProvider(moduleDirectory), RequestPath = "/modules/demos" });
+foreach (var (service, directory) in modules.Where(module => Directory.Exists(module.Value)))
+    app.UseStaticFiles(new StaticFileOptions { FileProvider = new PhysicalFileProvider(directory), RequestPath = $"/modules/{service}" });
 if (Directory.Exists(shellDirectory))
     app.UseStaticFiles(new StaticFileOptions { FileProvider = new PhysicalFileProvider(shellDirectory) });
 
-// The demos, with their text and personas, each signed in with an unsigned token, as demos.json lists them.
-var demos = JsonNode.Parse(await File.ReadAllTextAsync(Path.Combine(builder.Environment.ContentRootPath, "../demos.json")));
+// The demos, with their text and personas, each signed in with an unsigned token, as each describes them.
+var demos = new JsonArray(JsonNode.Parse(await File.ReadAllTextAsync(Path.Combine(root, "../LostProperty/demo.json"))));
+foreach (var demo in JsonNode.Parse(await File.ReadAllTextAsync(Path.Combine(root, "../demos.json")))!.AsArray())
+    demos.Add(demo!.DeepClone());
 
-var store = new InMemoryStore();
+// Each service has a store and an outbox of its own, as each has a table of its own in AWS.
+var lostPropertyStore = new InMemoryStore();
 var outbox = new InMemoryOutbox();
-var register = Registrations.Over(store, outbox);
-var uiBackend = new UiBackend(register);
-var scheduledWorker = new ScheduledWorker(register, _ => Task.FromResult(store.Sandboxes));
-var queueWorker = new QueueWorker(register);
+var registerLostProperty = LostProperty.Local.Registrations.Over(lostPropertyStore, outbox);
+var lostPropertyBackend = new UiBackend(registerLostProperty);
+var scheduledWorker = new ScheduledWorker(registerLostProperty, _ => Task.FromResult(lostPropertyStore.Sandboxes));
+var queueWorker = new QueueWorker(registerLostProperty);
+var boxOfficeBackend = new BoxOfficeBackend(Registrations.Over(new InMemoryStore(), new InMemoryOutbox()));
 
-app.MapMethods("/api/demos/{feature}", ["POST", "GET"], async (HttpContext http, string feature) =>
+app.MapMethods($"/api/{LostProperty.Service.Id}/{{feature}}", ["POST", "GET"], async (HttpContext http, string feature) =>
 {
     var request = await ToEvent(http.Request, $"{http.Request.Method} /{{feature}}", new() { ["feature"] = feature });
-    await Write(http.Response, await uiBackend.Handle(request, new LocalLambdaContext()));
+    await Write(http.Response, await lostPropertyBackend.Handle(request, new LocalLambdaContext()));
+});
+
+app.MapMethods($"/api/{Demos.Service.Id}/{{feature}}", ["POST", "GET"], async (HttpContext http, string feature) =>
+{
+    var request = await ToEvent(http.Request, $"{http.Request.Method} /{{feature}}", new() { ["feature"] = feature });
+    await Write(http.Response, await boxOfficeBackend.Handle(request, new LocalLambdaContext()));
 });
 
 app.MapPost("/jobs", async (HttpContext http) =>
@@ -65,8 +81,8 @@ app.MapPost("/jobs", async (HttpContext http) =>
 
 app.MapGet("/services.json", () => Results.Json(new
 {
-    @default = "/demos/lost-property/unclaimed-items",
-    services = new Dictionary<string, object> { [Service.Id] = new { module = "/modules/demos/index.js", bff = "/api/demos" } },
+    @default = $"/{LostProperty.Service.Id}/unclaimed-items",
+    services = modules.Keys.ToDictionary(service => service, service => (object)new { module = $"/modules/{service}/index.js", bff = $"/api/{service}" }),
     demos
 }));
 
@@ -125,7 +141,7 @@ async Task CollectForCharity(CancellationToken cancellationToken)
     try
     {
         while (await timer.WaitForNextTickAsync(cancellationToken))
-            await RunJob(new JsonObject { ["$feature"] = $"{Service.Id}/HandleCharityCollectionDue" });
+            await RunJob(new JsonObject { ["$feature"] = $"{LostProperty.Service.Id}/HandleCharityCollectionDue" });
     }
     catch (OperationCanceledException)
     {

@@ -3,10 +3,15 @@
   <Project Path="Common/Demos.Common.Aws/Demos.Common.Aws.csproj" />
   <Project Path="Common/Demos.Common.Functions/Demos.Common.Functions.csproj" />
   <Project Path="Common/Demos.Common.Local/Demos.Common.Local.csproj" />
+  <Project Path="Common/Demos.Common.Testing/Demos.Common.Testing.csproj" />
+  <Project Path="Common/Demos.Common.Tests/Demos.Common.Tests.csproj" />
+  <Project Path="LostProperty/Demos.LostProperty/Demos.LostProperty.csproj" />
+  <Project Path="LostProperty/Demos.LostProperty.Aws/Demos.LostProperty.Aws.csproj" />
+  <Project Path="LostProperty/Demos.LostProperty.Functions/Demos.LostProperty.Functions.csproj" />
+  <Project Path="LostProperty/Demos.LostProperty.Local/Demos.LostProperty.Local.csproj" />
+  <Project Path="LostProperty/Demos.LostProperty.Tests/Demos.LostProperty.Tests.csproj" />
   <Project Path="Demos.Aws/Demos.Aws.csproj" />
   <Project Path="Demos.Local/Demos.Local.csproj" />
-  <Project Path="Demos.QueueWorker/Demos.QueueWorker.csproj" />
-  <Project Path="Demos.ScheduledWorker/Demos.ScheduledWorker.csproj" />
   <Project Path="SignIn/Demos.SignIn/Demos.SignIn.csproj" />
   <Project Path="Demos.Tests/Demos.Tests.csproj" />
   <Project Path="Demos.UiBackend/Demos.UiBackend.csproj" />

@@ -1,3 +1,4 @@
+using Demos.Testing;
 using System.Security.Claims;
 using Demos.BoxOffice;
 using Featurewise;
@@ -203,7 +204,7 @@ public abstract class BoxOfficeTests : IAsyncDisposable
         await _features.Invoke(new ReleaseHouseSeats.Args("saturday-matinee"), Callers.Staff);
         await _features.Invoke(new BuySeats.Args("friday", 2), Callers.Theatregoer);
 
-        await _features.Invoke(new ResetDemo.Args("box-office"), Callers.Theatregoer);
+        await _features.Invoke(new ResetDemo.Args(), Callers.Theatregoer);
 
         Assert.Equal(0, (await Entry("saturday-matinee", Callers.Theatregoer)).Performance.SeatsLeft);
         Assert.Equal(2, (await Entry("friday", Callers.Theatregoer)).Performance.SeatsLeft);
@@ -223,6 +224,6 @@ public abstract class BoxOfficeTests : IAsyncDisposable
         (await _features.Invoke(new Performances.Args(), caller)).Performances.Single(entry => entry.Performance.Id == performance);
 }
 
-public class InMemoryBoxOfficeTests() : BoxOfficeTests(new Fakes());
+public class InMemoryBoxOfficeTests() : BoxOfficeTests(new Fakes(Local.Registrations.AddFacilities));
 
-public class DynamoBoxOfficeTests() : BoxOfficeTests(new DynamoLocal());
+public class DynamoBoxOfficeTests() : BoxOfficeTests(new DynamoLocal(Aws.Registrations.AddFacilities));

@@ -1,5 +1,5 @@
-# The demos service: the AWS facilities' resources and each entrypoint's, from the modules in
-# Common/Infrastructure. This is the module a package carries, with each function's zip in its functions folder. An
+# The demos service, now only the box office, until it becomes a service of its own as the lost property
+# office has: its table and UI backend, from the modules in Common/Infrastructure, and the demo sign-in. This is the module a package carries, with each function's zip in its functions folder. An
 # environment supplies the provider, the state, and the inputs that differ between environments.
 
 locals {
@@ -11,8 +11,9 @@ locals {
   # and the UI shell beside them, never take each other's names.
   name_prefix = "${var.name_prefix}-${local.service}"
 
-  # Each demo: its title, its text, its personas and its reset link.
-  demos = jsondecode(file("${path.module}/../demos.json"))
+  # Each demo: its title, its text, its personas and its reset link. The sign-in offers every demo's
+  # personas, the lost property office's included.
+  demos = concat([jsondecode(file("${path.module}/../LostProperty/demo.json"))], jsondecode(file("${path.module}/../demos.json")))
 }
 
 module "aws" {
@@ -43,35 +44,7 @@ module "ui_backend" {
   jwt_audience      = [module.sign_in.client_id]
 }
 
-module "scheduled_worker" {
-  source = "../Common/Infrastructure/modules/scheduled-worker"
 
-  package_zip = "${path.module}/../functions/Demos.ScheduledWorker.zip"
-  handler     = "Demos.ScheduledWorker::Demos.ScheduledWorker.Function::Handle"
-
-  name_prefix       = local.name_prefix
-  demos_table_name  = module.aws.table_name
-  demos_policy_json = module.aws.policy_json
-  timezone          = var.timezone
-  schedules = {
-    charity-collection = {
-      expression = "cron(0 6 * * ? *)"
-      link       = jsonencode({ "$feature" = "${local.service}/HandleCharityCollectionDue" })
-    }
-  }
-}
-
-module "queue_worker" {
-  source = "../Common/Infrastructure/modules/queue-worker"
-
-  package_zip = "${path.module}/../functions/Demos.QueueWorker.zip"
-  handler     = "Demos.QueueWorker::Demos.QueueWorker.Function::Handle"
-
-  name_prefix       = local.name_prefix
-  demos_table_name  = module.aws.table_name
-  demos_policy_json = module.aws.policy_json
-  stream_arn        = module.aws.stream_arn
-}
 
 # The service's module for the UI shell, in the shell's bucket, when the environment has a shell.
 module "ui" {

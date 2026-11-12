@@ -3,7 +3,6 @@ using Amazon.Lambda.Core;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using Demos.BoxOffice;
 using Demos.Functions;
-using Demos.LostProperty;
 using Featurewise;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,7 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Demos.UiBackend;
 
-// The demos' UI backend: the features a visitor can invoke, each with its rule, over the shared UiBackend.
+// The box office's UI backend, still the demos service until it becomes a service of its own: the
+// features a visitor can invoke, each with its rule.
 public class Function
 {
     private readonly Functions.UiBackend _backend;
@@ -23,19 +23,7 @@ public class Function
     public Function(Action<IServiceCollection> registerDependencies)
     {
         _backend = new Functions.UiBackend(Service.Id, features => features
-            // Every demo.
             .RegisterFeature<ResetDemo, AnySignedInCaller<ResetDemo.Args>>()
-
-            // The lost property office.
-            .RegisterFeature<UnclaimedItems, AnySignedInCaller<UnclaimedItems.Args>>()
-            .RegisterFeature<ItemsFoundAt, AnySignedInCaller<ItemsFoundAt.Args>>()
-            .RegisterFeature<DonatedToCharity, AnySignedInCaller<DonatedToCharity.Args>>()
-            .RegisterFeature<YourLostReports, AnySignedInCaller<YourLostReports.Args>>()
-            .RegisterFeature<HandInItem, HandInItem.Rule>()
-            .RegisterFeature<ReportLostItem, AnySignedInCaller<ReportLostItem.Args>>()
-            .RegisterFeature<ClaimItem, AnySignedInCaller<ClaimItem.Args>>()
-
-            // The theatre box office.
             .RegisterFeature<Performances, AnySignedInCaller<Performances.Args>>()
             .RegisterFeature<YourTickets, AnySignedInCaller<YourTickets.Args>>()
             .RegisterFeature<BuySeats, AnySignedInCaller<BuySeats.Args>>()

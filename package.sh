@@ -17,7 +17,7 @@ mkdir -p "$package/functions"
 mkdir -p "$package/Demos.Ui/dist"
 rsync -a Demos.Ui/dist/ "$package/Demos.Ui/dist/"
 
-for project in Demos.UiBackend Demos.ScheduledWorker Demos.QueueWorker SignIn/Demos.SignIn; do
+for project in Demos.UiBackend SignIn/Demos.SignIn; do
   name=$(basename "$project")
   dotnet publish "$project" -c Release -r linux-arm64 --self-contained false \
     -o "$out/publish/$name" --nologo -v quiet
@@ -32,6 +32,7 @@ done
 
 # The demos, with their personas, which the module's demos output reads.
 cp demos.json "$package/"
+mkdir -p "$package/LostProperty" && cp LostProperty/demo.json "$package/LostProperty/"
 
 echo "$version" > "$package/VERSION"
 (cd "$package" && zip -qrX "$out/demos-$version.zip" .)

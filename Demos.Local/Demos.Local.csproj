@@ -8,8 +8,8 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Demos.UiBackend\Demos.UiBackend.csproj" />
-        <ProjectReference Include="..\Demos.ScheduledWorker\Demos.ScheduledWorker.csproj" />
-        <ProjectReference Include="..\Demos.QueueWorker\Demos.QueueWorker.csproj" />
+        <ProjectReference Include="..\LostProperty\Demos.LostProperty.Functions\Demos.LostProperty.Functions.csproj" />
+        <ProjectReference Include="..\LostProperty\Demos.LostProperty.Local\Demos.LostProperty.Local.csproj" />
         <ProjectReference Include="..\Common\Demos.Common.Local\Demos.Common.Local.csproj" />
     </ItemGroup>
 

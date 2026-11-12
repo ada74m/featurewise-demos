@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Demos.LostProperty\Demos.LostProperty.csproj" />
+        <ProjectReference Include="..\..\Common\Demos.Common.Aws\Demos.Common.Aws.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Amazon.Lambda.Logging.AspNetCore" Version="5.1.0" />
+    </ItemGroup>
+
+</Project>

@@ -6,4 +6,10 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+        <!-- Featurewise.Core, as a package, or from a local checkout when FeaturewiseSource is set; see Directory.Build.props. -->
+        <PackageReference Include="Featurewise.Core" Version="$(FeaturewiseVersion)" Condition="'$(FeaturewiseSource)' == ''" />
+        <ProjectReference Include="$(FeaturewiseDirectory)Featurewise/Featurewise.csproj" Condition="'$(FeaturewiseSource)' != ''" />
+    </ItemGroup>
+
 </Project>
