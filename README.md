@@ -1,6 +1,6 @@
 # Featurewise demos
 
-Small, live demos of the ideas in *Featurewise Organisation*, each in a micro-domain of its own. Each demo is a Featurewise service of its own, deployed on its own, and all are shown through the UI shell's generic renderer, so what a visitor sees is the features' own output: their result cases, and the links appearing and disappearing as the persona changes. The book's code samples come from here.
+Small, live demos of the ideas in *Featurewise Organisation*, each in a micro-domain of its own. Each demo is a Featurewise service of its own, deployed on its own, and shown through the UI shell. The box office is shown by its generic renderer, so what a visitor sees is the features' own output: their result cases, and the links appearing and disappearing as the persona changes. The lost property office is dressed, feature by feature, for chapter 4, with two features still generic; the shell's services page (the cog) turns its dressing off, to compare. The book's code samples come from here.
 
 Built so far: the lost property office, for chapters 1 and 3, and the theatre box office, for chapters 5 and 6.
 

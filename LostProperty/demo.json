@@ -4,7 +4,8 @@
   "chapter": "3. Links",
   "about": [
     "A railway station's lost property office. Its queries say what's there, its commands hand things in and claim them, and two workers act when nobody is waiting: one when something is handed in, and one on a schedule.",
-    "Each page offers links to what you can do next, but only the ones that would work for you now. And a claim that fails says what you can do instead."
+    "Each page offers links to what you can do next, but only the ones that would work for you now. And a claim that fails says what you can do instead.",
+    "Chapter 3 shows it plain, as the shell's generic renderer does. Chapter 4 dresses it, one feature at a time, and leaves two features plain. The services page, under the cog, switches between the two."
   ],
   "storySoFar": [
     "Six things are waiting to be claimed, from a left glove to a set of false teeth (upper only). The roller skate and the library book have waited three months, so the next charity collection takes them.",
@@ -12,7 +13,7 @@
   ],
   "tryThis": [
     "As the clerk, hand in an umbrella found at any station.",
-    "As the traveller, look at your lost reports: the office has noticed it may be yours, and offers a link to claim it. Open the link, change the reference, and follow it. Then claim it properly, and try claiming it again.",
+    "As the traveller, look at your lost reports: the office has noticed it may be yours, and offers a link to claim it. In the plain view, open the link, change the reference, and follow it; then claim it properly.",
     "As the traveller, report losing a glove: the office already has one, and offers a link to claim it straight away.",
     "The charity collects early each morning: see what was donated to charity."
   ],
