@@ -22,7 +22,7 @@ data "aws_iam_policy_document" "function" {
 }
 
 module "function" {
-  source = "../../Infrastructure/modules/lambda-function"
+  source = "../../Common/Infrastructure/modules/lambda-function"
 
   name        = "${var.name_prefix}-sign-in"
   package_zip = "${path.module}/../../functions/Demos.SignIn.zip"

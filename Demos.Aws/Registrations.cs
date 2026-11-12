@@ -22,17 +22,7 @@ public static class Registrations
         // Lambda's logger writes each entry as it's logged, so nothing is lost when the function freezes.
         services.AddLogging(logging => logging.AddLambdaLogger(new LambdaLoggerOptions { IncludeScopes = true }));
 
-        services.AddSingleton(dynamo);
-        services.AddSingleton(settings);
-        services.AddSingleton(clock ?? TimeProvider.System);
-
-        // Each invocation has its own unit of work, which its facilities stage their writes in, and sees
-        // only its sandbox's tables.
-        services.AddScoped<DynamoChanges>();
-        services.AddScoped<IChanges>(provider => provider.GetRequiredService<DynamoChanges>());
-        services.AddScoped<DynamoTables>();
-        services.AddScoped<IEvents, DynamoEvents>();
-        services.AddScoped<IDemoData, DynamoDemoData>();
+        CommonFacilities.Add(services, dynamo, settings, clock ?? TimeProvider.System);
 
         services.AddScoped<IFoundItems, DynamoFoundItems>();
         services.AddScoped<ILostReports, DynamoLostReports>();

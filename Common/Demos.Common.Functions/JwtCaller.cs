@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using Amazon.Lambda.APIGatewayEvents;
 
-namespace Demos.UiBackend;
+namespace Demos.Functions;
 
 // The caller of a request, from the claims that API Gateway's JWT authorizer has verified, with the
 // visitor's sandbox when the token names one. Without an authorizer, or without a token, the caller is

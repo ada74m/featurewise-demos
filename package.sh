@@ -24,9 +24,7 @@ for project in UiBackend ScheduledWorker QueueWorker SignIn; do
 done
 
 # The modules keep their places relative to each other, as their sources refer to each other by path.
-for module in Infrastructure Demos.Aws/Infrastructure Demos.UiBackend/Infrastructure \
-  Demos.ScheduledWorker/Infrastructure Demos.QueueWorker/Infrastructure Demos.SignIn/Infrastructure \
-  Demos.Ui/Infrastructure; do
+for module in Infrastructure Common/Infrastructure Demos.SignIn/Infrastructure; do
   mkdir -p "$package/$module"
   rsync -a --include='*/' --include='*.tf' --exclude='*' --prune-empty-dirs "$module/" "$package/$module/"
 done

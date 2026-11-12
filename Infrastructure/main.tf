@@ -1,5 +1,5 @@
-# The demos service: the AWS facilities' resources and each entrypoint's, from the modules beside each
-# project. This is the module a package carries, with each function's zip in its functions folder. An
+# The demos service: the AWS facilities' resources and each entrypoint's, from the modules in
+# Common/Infrastructure. This is the module a package carries, with each function's zip in its functions folder. An
 # environment supplies the provider, the state, and the inputs that differ between environments.
 
 locals {
@@ -13,7 +13,7 @@ locals {
 }
 
 module "aws" {
-  source = "../Demos.Aws/Infrastructure"
+  source = "../Common/Infrastructure/modules/table"
 
   name_prefix = local.name_prefix
 }
@@ -27,7 +27,10 @@ module "sign_in" {
 }
 
 module "ui_backend" {
-  source = "../Demos.UiBackend/Infrastructure"
+  source = "../Common/Infrastructure/modules/ui-backend"
+
+  package_zip = "${path.module}/../functions/Demos.UiBackend.zip"
+  handler     = "Demos.UiBackend::Demos.UiBackend.Function::Handle"
 
   name_prefix       = local.name_prefix
   demos_table_name  = module.aws.table_name
@@ -37,7 +40,10 @@ module "ui_backend" {
 }
 
 module "scheduled_worker" {
-  source = "../Demos.ScheduledWorker/Infrastructure"
+  source = "../Common/Infrastructure/modules/scheduled-worker"
+
+  package_zip = "${path.module}/../functions/Demos.ScheduledWorker.zip"
+  handler     = "Demos.ScheduledWorker::Demos.ScheduledWorker.Function::Handle"
 
   name_prefix       = local.name_prefix
   demos_table_name  = module.aws.table_name
@@ -52,7 +58,10 @@ module "scheduled_worker" {
 }
 
 module "queue_worker" {
-  source = "../Demos.QueueWorker/Infrastructure"
+  source = "../Common/Infrastructure/modules/queue-worker"
+
+  package_zip = "${path.module}/../functions/Demos.QueueWorker.zip"
+  handler     = "Demos.QueueWorker::Demos.QueueWorker.Function::Handle"
 
   name_prefix       = local.name_prefix
   demos_table_name  = module.aws.table_name
@@ -62,8 +71,10 @@ module "queue_worker" {
 
 # The service's module for the UI shell, in the shell's bucket, when the environment has a shell.
 module "ui" {
-  source = "../Demos.Ui/Infrastructure"
+  source = "../Common/Infrastructure/modules/ui-module"
   count  = var.shell_bucket == null ? 0 : 1
+
+  dist = "${path.module}/../Demos.Ui/dist"
 
   shell_bucket = var.shell_bucket
   service_id   = local.service

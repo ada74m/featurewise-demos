@@ -1,4 +1,4 @@
-namespace Demos.UiBackend;
+namespace Demos.Functions;
 
 // An error response as RFC 9457 describes, without a type of its own, so its status says what it is. The
 // UI shell tells it from a result by its content type, application/problem+json.

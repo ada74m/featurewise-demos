@@ -2,7 +2,7 @@
 # shell loads it from. It deploys with the service, so the module and its backend always match.
 
 locals {
-  dist = "${path.module}/../dist"
+  dist = var.dist
 
   content_types = {
     js  = "text/javascript; charset=utf-8"

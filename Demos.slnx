@@ -1,4 +1,8 @@
 <Solution>
+  <Project Path="Common/Demos.Common/Demos.Common.csproj" />
+  <Project Path="Common/Demos.Common.Aws/Demos.Common.Aws.csproj" />
+  <Project Path="Common/Demos.Common.Functions/Demos.Common.Functions.csproj" />
+  <Project Path="Common/Demos.Common.Local/Demos.Common.Local.csproj" />
   <Project Path="Demos.Aws/Demos.Aws.csproj" />
   <Project Path="Demos.Local/Demos.Local.csproj" />
   <Project Path="Demos.QueueWorker/Demos.QueueWorker.csproj" />

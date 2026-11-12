@@ -2,11 +2,11 @@
 # every sandbox in use.
 
 module "function" {
-  source = "../../Infrastructure/modules/lambda-function"
+  source = "../lambda-function"
 
   name        = "${var.name_prefix}-scheduled-worker"
-  package_zip = "${path.module}/../../functions/Demos.ScheduledWorker.zip"
-  handler     = "Demos.ScheduledWorker::Demos.ScheduledWorker.Function::Handle"
+  package_zip = var.package_zip
+  handler     = var.handler
   policy_json = var.demos_policy_json
   timeout     = 300
   environment = {

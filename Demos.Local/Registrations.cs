@@ -20,17 +20,7 @@ public static class Registrations
     // The facilities alone, without the console logging, as the tests register them with a clock of their own.
     public static void AddFacilities(IServiceCollection services, InMemoryStore store, InMemoryOutbox outbox, TimeProvider clock)
     {
-        services.AddSingleton(store);
-        services.AddSingleton(outbox);
-        services.AddSingleton(clock);
-
-        // Each invocation has its own unit of work, which its facilities stage their writes in, and sees
-        // only its sandbox's tables.
-        services.AddScoped<InMemoryChanges>();
-        services.AddScoped<IChanges>(provider => provider.GetRequiredService<InMemoryChanges>());
-        services.AddScoped<SandboxedTables>();
-        services.AddScoped<IEvents, InMemoryEvents>();
-        services.AddScoped<IDemoData, InMemoryDemoData>();
+        CommonFacilities.Add(services, store, outbox, clock);
 
         services.AddScoped<IFoundItems, InMemoryFoundItems>();
         services.AddScoped<ILostReports, InMemoryLostReports>();

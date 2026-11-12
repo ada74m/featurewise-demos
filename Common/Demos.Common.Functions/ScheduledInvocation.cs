@@ -1,6 +1,6 @@
 using Featurewise;
 
-namespace Demos.ScheduledWorker;
+namespace Demos.Functions;
 
 // What a schedule sends: the link to invoke, and the schedule and execution it comes from, which
 // EventBridge Scheduler fills in from <aws.scheduler.schedule-arn> and <aws.scheduler.execution-id>.

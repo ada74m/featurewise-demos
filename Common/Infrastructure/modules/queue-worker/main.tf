@@ -3,11 +3,11 @@
 # is invoked.
 
 module "function" {
-  source = "../../Infrastructure/modules/lambda-function"
+  source = "../lambda-function"
 
   name        = "${var.name_prefix}-queue-worker"
-  package_zip = "${path.module}/../../functions/Demos.QueueWorker.zip"
-  handler     = "Demos.QueueWorker::Demos.QueueWorker.Function::Handle"
+  package_zip = var.package_zip
+  handler     = var.handler
   policy_json = data.aws_iam_policy_document.function.json
   timeout     = 60
   environment = {

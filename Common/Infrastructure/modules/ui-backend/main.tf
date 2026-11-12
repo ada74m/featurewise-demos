@@ -1,11 +1,11 @@
 # The UI backend: an HTTP API whose routes, POST /{feature} and GET /{feature}, reach one function.
 
 module "function" {
-  source = "../../Infrastructure/modules/lambda-function"
+  source = "../lambda-function"
 
   name        = "${var.name_prefix}-ui-backend"
-  package_zip = "${path.module}/../../functions/Demos.UiBackend.zip"
-  handler     = "Demos.UiBackend::Demos.UiBackend.Function::Handle"
+  package_zip = var.package_zip
+  handler     = var.handler
   policy_json = var.demos_policy_json
   environment = {
     DEMOS_TABLE = var.demos_table_name

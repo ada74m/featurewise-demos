@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Demos\Demos.csproj" />
+        <ProjectReference Include="..\Common\Demos.Common.Aws\Demos.Common.Aws.csproj" />
     </ItemGroup>
 
     <ItemGroup>

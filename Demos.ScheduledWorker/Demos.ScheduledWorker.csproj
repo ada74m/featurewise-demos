@@ -11,6 +11,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Demos.Aws\Demos.Aws.csproj" />
+        <ProjectReference Include="..\Common\Demos.Common.Functions\Demos.Common.Functions.csproj" />
     </ItemGroup>
 
     <ItemGroup>
