@@ -10,10 +10,13 @@
   <Project Path="LostProperty/Demos.LostProperty.Functions/Demos.LostProperty.Functions.csproj" />
   <Project Path="LostProperty/Demos.LostProperty.Local/Demos.LostProperty.Local.csproj" />
   <Project Path="LostProperty/Demos.LostProperty.Tests/Demos.LostProperty.Tests.csproj" />
-  <Project Path="Demos.Aws/Demos.Aws.csproj" />
-  <Project Path="Demos.Local/Demos.Local.csproj" />
+  <Project Path="BoxOffice/Demos.BoxOffice/Demos.BoxOffice.csproj" />
+  <Project Path="BoxOffice/Demos.BoxOffice.Aws/Demos.BoxOffice.Aws.csproj" />
+  <Project Path="BoxOffice/Demos.BoxOffice.Functions/Demos.BoxOffice.Functions.csproj" />
+  <Project Path="BoxOffice/Demos.BoxOffice.Local/Demos.BoxOffice.Local.csproj" />
+  <Project Path="BoxOffice/Demos.BoxOffice.Tests/Demos.BoxOffice.Tests.csproj" />
   <Project Path="SignIn/Demos.SignIn/Demos.SignIn.csproj" />
-  <Project Path="Demos.Tests/Demos.Tests.csproj" />
-  <Project Path="Demos.UiBackend/Demos.UiBackend.csproj" />
-  <Project Path="Demos/Demos.csproj" />
+  <Project Path="SignIn/Demos.SignIn.Tests/Demos.SignIn.Tests.csproj" />
+  <Project Path="Demos.Local/Demos.Local.csproj" />
+  <Project Path="Demos.Local.Tests/Demos.Local.Tests.csproj" />
 </Solution>

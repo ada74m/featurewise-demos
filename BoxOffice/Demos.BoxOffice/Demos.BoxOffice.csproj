@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Only what every demo's core stands on, and through it Featurewise.Core. -->
+        <ProjectReference Include="..\..\Common\Demos.Common\Demos.Common.csproj" />
+    </ItemGroup>
+
+</Project>

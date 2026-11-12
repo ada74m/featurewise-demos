@@ -4,7 +4,8 @@ using Amazon.Lambda.APIGatewayEvents;
 using Demos.Local;
 using Demos.LostProperty.Functions;
 using Microsoft.Extensions.FileProviders;
-using BoxOfficeBackend = Demos.UiBackend.Function;
+using BoxOffice = Demos.BoxOffice;
+using BoxOfficeBackend = Demos.BoxOffice.Functions.UiBackend;
 using LostProperty = Demos.LostProperty;
 
 // Runs every demo in one process, each a service over facilities in memory of its own, so they can be
@@ -16,8 +17,7 @@ using LostProperty = Demos.LostProperty;
 //   POST /jobs                           runs the lost property office's job whose link is the body, as a
 //                                        schedule would
 //
-// The services are lost-property and, until the box office becomes a service of its own, demos. It also
-// serves the UI, as CloudFront will in AWS, all from one origin, so there's no CORS:
+// The services are lost-property and box-office. It also serves the UI, as CloudFront will in AWS, all from one origin, so there's no CORS:
 //
 //   GET  /services.json                  the shell's configuration, with each demo's description
 //   GET  /modules/<service>/...          each service's module, from its dist folder
@@ -36,7 +36,7 @@ var shellDirectory = Path.GetFullPath(builder.Configuration["ShellFiles"] ?? Pat
 var modules = new Dictionary<string, string>
 {
     [LostProperty.Service.Id] = Path.GetFullPath(Path.Combine(root, "../LostProperty/Demos.LostProperty.Ui/dist")),
-    [Demos.Service.Id] = Path.GetFullPath(Path.Combine(root, "../Demos.Ui/dist"))
+    [BoxOffice.Service.Id] = Path.GetFullPath(Path.Combine(root, "../BoxOffice/Demos.BoxOffice.Ui/dist"))
 };
 
 foreach (var (service, directory) in modules.Where(module => Directory.Exists(module.Value)))
@@ -45,9 +45,9 @@ if (Directory.Exists(shellDirectory))
     app.UseStaticFiles(new StaticFileOptions { FileProvider = new PhysicalFileProvider(shellDirectory) });
 
 // The demos, with their text and personas, each signed in with an unsigned token, as each describes them.
-var demos = new JsonArray(JsonNode.Parse(await File.ReadAllTextAsync(Path.Combine(root, "../LostProperty/demo.json"))));
-foreach (var demo in JsonNode.Parse(await File.ReadAllTextAsync(Path.Combine(root, "../demos.json")))!.AsArray())
-    demos.Add(demo!.DeepClone());
+var demos = new JsonArray(
+    JsonNode.Parse(await File.ReadAllTextAsync(Path.Combine(root, "../LostProperty/demo.json"))),
+    JsonNode.Parse(await File.ReadAllTextAsync(Path.Combine(root, "../BoxOffice/demo.json"))));
 
 // Each service has a store and an outbox of its own, as each has a table of its own in AWS.
 var lostPropertyStore = new InMemoryStore();
@@ -56,7 +56,7 @@ var registerLostProperty = LostProperty.Local.Registrations.Over(lostPropertySto
 var lostPropertyBackend = new UiBackend(registerLostProperty);
 var scheduledWorker = new ScheduledWorker(registerLostProperty, _ => Task.FromResult(lostPropertyStore.Sandboxes));
 var queueWorker = new QueueWorker(registerLostProperty);
-var boxOfficeBackend = new BoxOfficeBackend(Registrations.Over(new InMemoryStore(), new InMemoryOutbox()));
+var boxOfficeBackend = new BoxOfficeBackend(BoxOffice.Local.Registrations.Over(new InMemoryStore(), new InMemoryOutbox()));
 
 app.MapMethods($"/api/{LostProperty.Service.Id}/{{feature}}", ["POST", "GET"], async (HttpContext http, string feature) =>
 {
@@ -64,7 +64,7 @@ app.MapMethods($"/api/{LostProperty.Service.Id}/{{feature}}", ["POST", "GET"], a
     await Write(http.Response, await lostPropertyBackend.Handle(request, new LocalLambdaContext()));
 });
 
-app.MapMethods($"/api/{Demos.Service.Id}/{{feature}}", ["POST", "GET"], async (HttpContext http, string feature) =>
+app.MapMethods($"/api/{BoxOffice.Service.Id}/{{feature}}", ["POST", "GET"], async (HttpContext http, string feature) =>
 {
     var request = await ToEvent(http.Request, $"{http.Request.Method} /{{feature}}", new() { ["feature"] = feature });
     await Write(http.Response, await boxOfficeBackend.Handle(request, new LocalLambdaContext()));

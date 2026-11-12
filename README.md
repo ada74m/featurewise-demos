@@ -1,12 +1,12 @@
 # Featurewise demos
 
-Small, live demos of the ideas in *Featurewise Organisation*, each in a micro-domain of its own. They're one Featurewise service, `demos`, shown through the UI shell's generic renderer, so what a visitor sees is the features' own output: their result cases, and the links appearing and disappearing as the persona changes. The book's code samples come from here.
+Small, live demos of the ideas in *Featurewise Organisation*, each in a micro-domain of its own. Each demo is a Featurewise service of its own, deployed on its own, and all are shown through the UI shell's generic renderer, so what a visitor sees is the features' own output: their result cases, and the links appearing and disappearing as the persona changes. The book's code samples come from here.
 
 Built so far: the lost property office, for chapters 1 and 3, and the theatre box office, for chapters 5 and 6.
 
 ## The lost property office (chapters 1 and 3)
 
-A railway station's lost property office, showing a feature as a whole job, a command beside a query, both kinds of worker, result cases, and naming for each family.
+The service `lost-property`, in `LostProperty/`. A railway station's lost property office, showing a feature as a whole job, a command beside a query, both kinds of worker, result cases, and naming for each family.
 
 | Feature | Family | What it does |
 |---|---|---|
@@ -24,7 +24,7 @@ The personas are a traveller, who has already reported losing an umbrella, and a
 
 ## The theatre box office (chapters 5 and 6)
 
-A small theatre's box office, selling seats for the four performances of *The Pirates of Penge*. It shows links offered only when they'd work, by the state of things and by who's asking, links that bring the next step to you, and result cases that turn an obstacle into a way forward.
+The service `box-office`, in `BoxOffice/`. A small theatre's box office, selling seats for the four performances of *The Pirates of Penge*. It shows links offered only when they'd work, by the state of things and by who's asking, links that bring the next step to you, and result cases that turn an obstacle into a way forward.
 
 | Feature | Family | What it does |
 |---|---|---|
@@ -41,8 +41,8 @@ The personas are a theatregoer, who already has tickets for Thursday, and box of
 
 As the `sample` service is (see its `PRINCIPLES.md`), with three additions:
 
-- **A service per demo,** such as `lost-property` in `LostProperty/`, its core in `Features`, `Models`, `Facilities` and `Events`. The box office is still in the service `demos`, until it moves too.
-- **Events, through an outbox.** `IEvents.Raise` stages the event in the invocation's `IChanges`, so it's committed with the feature's other writes or not at all. On AWS, the outbox is rows in the demos' table, and its stream delivers them to `Demos.QueueWorker`, which turns each event into its worker's link.
+- **A service per demo, sharing their plumbing.** Each demo's folder holds a service with the sample's shape: its core (`Features`, `Models`, `Facilities`, `Events`), its facilities on AWS and in memory, its functions, its module for the shell, its tests, its Terraform and its `demo.json`. What every demo shares is in `Common/`, so a demo's own code is its domain and its registrations.
+- **Events, through an outbox.** `IEvents.Raise` stages the event in the invocation's `IChanges`, so it's committed with the feature's other writes or not at all. On AWS, the outbox is rows in the service's table, and its stream delivers them to the service's queue worker, which turns each event into its worker's link.
 - **Sandboxes.** Each visitor works in a sandbox of their own, named by a `sandbox` claim in their token, which every persona they sign in as shares. Only the facilities read it (`SandboxedTables` locally, `DynamoTables` on AWS), so the features know nothing of it. Each demo seeds a sandbox the first time it's used, and on AWS a sandbox's data expires a week later. A scheduled job runs once in every sandbox in use, and an event is handled in the sandbox it was raised in.
 
 | Project | What it is |
@@ -52,29 +52,25 @@ As the `sample` service is (see its `PRINCIPLES.md`), with three additions:
 | `Common/Demos.Common.Local` | The same plumbing in memory, with what the local host needs to run the functions. |
 | `Common/Demos.Common.Functions` | The handlers every demo's functions share: the UI backend (`POST /{feature}`, and `GET /{feature}?link=` for queries), the scheduled worker (a job in every sandbox in use) and the queue worker (the workers events trigger, from DynamoDB's stream). |
 | `Common/Demos.Common.Testing` | What every demo's tests stand on: facilities in memory and over DynamoDB Local, with the demo's own. |
-| `LostProperty/` | The lost property office, the service `lost-property`: its core (`Demos.LostProperty`), its facilities on AWS and in memory, its functions (the UI backend, the queue worker and the scheduled worker, one zip with a handler each), its module (`Demos.LostProperty.Ui`), its tests, its Terraform and its `demo.json`. |
-| `Demos` | The box office's core, still in the service `demos` until it becomes a service of its own. |
-| `Demos.Aws` | The box office's facilities on DynamoDB. |
-| `Demos.UiBackend` | The box office's UI backend. |
-| `SignIn/Demos.SignIn` | The demo sign-in: an identity provider, not a featurewise service, where a visitor becomes any persona the environment passes it, without a password. Tokens carry the visitor's sandbox. See `SignIn/README.md`. |
-| `Demos.Local` | Everything in one process, over facilities in memory. |
-| `Demos.Ui` | The box office's module: an address for its first page, and nothing else. Every other query has the shell's default address. |
-| `Demos.Tests` | The box office's features, the sign-in, and the local host. |
+| `LostProperty/` | The service `lost-property`: `Demos.LostProperty` (the core), `.Aws` and `.Local` (its facilities), `.Functions` (the UI backend, the queue worker and the scheduled worker, one zip with a handler each), `.Ui` (its module), `.Tests`, `Infrastructure/` and `demo.json`. |
+| `BoxOffice/` | The service `box-office`, in the same shape, with only a UI backend, since it has no workers. |
+| `SignIn/` | The demo sign-in: an identity provider, not a featurewise service, where a visitor becomes any persona the environment passes it, without a password. Tokens carry the visitor's sandbox. See `SignIn/README.md`. |
+| `Demos.Local` | Every demo in one process, each over facilities in memory of its own, with the shell. |
 
-The Terraform modules are in `Common/Infrastructure/modules`, apart from the sign-in's in `SignIn/Infrastructure`. `LostProperty/Infrastructure` wires the office's together, and the root `Infrastructure/` the box office's and the sign-in. `package.sh` builds the package an environment uses, and CI publishes it as `demos/<version>`.
+Each service's `Infrastructure/` is the module an environment uses, built from the modules in `Common/Infrastructure/modules`; the sign-in's is `SignIn/Infrastructure`. Each module gives its first page an address, such as `/lost-property/unclaimed-items`, and leaves every other query to the shell's default address. `package.sh` builds the package an environment uses, and CI publishes it as `demos/<version>`.
 
-`LostProperty/demo.json`, and `demos.json` for the box office, describe each demo: its title and chapter, what it is, the story its seed data tells, what to try, who a visitor can be in it, and the link that resets it. The sign-in offers its personas, the local host's `services.json` carries it, and the environment passes it to the shell, whose demo panel shows it above the demo's pages, with a button for each persona the text names and **Reset this demo**. `ResetDemo` forgets the demo's data in the visitor's sandbox, so its story starts again. Any address takes `?as=<persona>`, as a link from the book does.
+Each demo's `demo.json` describes it: its title and chapter, what it is, the story its seed data tells, what to try, who a visitor can be in it, and the link that resets it. The sign-in offers its personas, the local host's `services.json` carries it, and the environment passes it to the shell, whose demo panel shows it above the demo's pages, with a button for each persona the text names and **Reset this demo**. `ResetDemo` forgets the demo's data in the visitor's sandbox, so its story starts again. Any address takes `?as=<persona>`, as a link from the book does.
 
 ## Running locally
 
 ```
 export GITHUB_PACKAGES_TOKEN=$(gh auth token)
 (cd LostProperty/Demos.LostProperty.Ui && npm install && npm run build)
-(cd Demos.Ui && npm install && npm run build)
+(cd BoxOffice/Demos.BoxOffice.Ui && npm install && npm run build)
 (cd ../ui && npm install && npm run build)        # the shell, from a sibling checkout of featurewise-ui
 dotnet run --project Demos.Local
 ```
 
 To run the DynamoDB tests too, start DynamoDB Local (`docker run -d -p 8000:8000 amazon/dynamodb-local`) and set `DYNAMODB_LOCAL=http://localhost:8000` before `dotnet test`; without it they're skipped.
 
-Then open the URL it prints, sign in from the pill as any persona, and follow the links. The lost property office is at `/lost-property/unclaimed-items`, and the box office at `/demos/box-office/performances`. Locally, events reach their workers as soon as they're committed, and the charity collects every minute.
+Then open the URL it prints, sign in from the pill as any persona, and follow the links. The lost property office is at `/lost-property/unclaimed-items`, and the box office at `/box-office/performances`. Locally, events reach their workers as soon as they're committed, and the charity collects every minute.
