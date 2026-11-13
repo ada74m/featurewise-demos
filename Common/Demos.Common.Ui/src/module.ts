@@ -33,12 +33,8 @@ export interface QueryBuilder extends CommandBuilder {
 }
 
 export interface ModuleBuilder extends ServiceModule {
-  readonly service: string;
   addQuery(feature: string): QueryBuilder;
   addCommand(feature: string): CommandBuilder;
-  // The path in the shell of a link's address, such as "/lost-property/found-at/York", or null if the
-  // module gives it none.
-  pathOf(link: Link): string | null;
 }
 
 export interface ModuleOptions {
@@ -94,8 +90,6 @@ export function featurewiseModule(service: string, options: ModuleOptions = {}):
   }
 
   return {
-    service,
-
     addQuery(feature) {
       const name = add(feature);
       return featureBuilder<QueryBuilder>(name, builder => ({
@@ -118,11 +112,6 @@ export function featurewiseModule(service: string, options: ModuleOptions = {}):
 
     addressToLink,
     linkToAddress,
-
-    pathOf(link) {
-      const address = linkToAddress(link);
-      return address === null ? null : `/${encodeURIComponent(service)}/${address}`;
-    },
 
     render(element, response, host) {
       const body = response.body as { $case?: unknown } | null;

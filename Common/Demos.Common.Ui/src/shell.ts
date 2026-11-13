@@ -19,6 +19,8 @@ export interface Host {
   follow(link: Link): void;
   toast(message: string): void;
   embed(element: HTMLElement, link: Link, onResult?: (response: ShellResponse) => void): () => void;
+  // The path in the shell where a link to a query loads, for an anchor's href, for a link to any service.
+  pathOf(link: Link): string | null;
 }
 
 export interface ServiceModule {

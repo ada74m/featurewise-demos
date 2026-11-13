@@ -8,7 +8,16 @@ import type { Host, Link, ShellResponse } from "demos-common-ui";
 export function setUp() {
   const followed: Link[] = [];
   const toasts: string[] = [];
-  const host: Host = { follow: link => followed.push(link), toast: message => toasts.push(message), embed: () => () => {} };
+  // Its paths are the module's addresses, as the shell's are once the module is loaded.
+  const host: Host = {
+    follow: link => followed.push(link),
+    toast: message => toasts.push(message),
+    embed: () => () => {},
+    pathOf: link => {
+      const address = lostProperty.linkToAddress(link);
+      return address === null ? null : `/lost-property/${address}`;
+    }
+  };
   const element = document.createElement("div");
   document.body.replaceChildren(element);
 

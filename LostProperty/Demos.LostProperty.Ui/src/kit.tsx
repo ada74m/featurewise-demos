@@ -1,7 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import type { Host, Link } from "demos-common-ui";
-import { ui } from "./index";
 import { styles } from "./styles";
 
 // What every feature's renderers share: mounting a page, presenting a link, and asking for details.
@@ -21,12 +20,11 @@ export function toastAndFollow(host: Host, message: string, next: Link): () => v
   return () => {};
 }
 
-// A link presented as an anchor: it has an href where the link has an address, so it can be opened in
-// a new tab or copied, and a click follows it through the shell. The index imports the features, which
-// import this file, so ui is read only when an anchor renders, by which time the index has made it.
+// A link to a query presented as an anchor: its href is where the shell loads the link, so it can be
+// opened in a new tab or copied, and a click follows it through the shell.
 export function Anchor({ link, host, children }: { link: Link; host: Host; children: ReactNode }) {
   return (
-    <a href={ui.pathOf(link) ?? "#"}
+    <a href={host.pathOf(link) ?? "#"}
        onClick={event => {
          if (event.metaKey || event.ctrlKey || event.shiftKey)
            return;

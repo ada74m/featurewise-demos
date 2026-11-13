@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { featurewiseModule, type Host, type Renderer, type ShellResponse } from "../src/index";
 
-const host: Host = { follow: () => {}, toast: () => {}, embed: () => () => {} };
+const host: Host = { follow: () => {}, toast: () => {}, embed: () => () => {}, pathOf: () => null };
 const element = {} as HTMLElement;
 
 const response = (feature: string, body: unknown): ShellResponse =>
@@ -41,11 +41,6 @@ describe("a module's addresses", () => {
   it("take the home address for the service's own path, and ignore a query string", () => {
     expect(ui.addressToLink("")).toEqual({ $feature: "shop/Aisles" });
     expect(ui.addressToLink("aisles?utm=book")).toEqual({ $feature: "shop/Aisles" });
-  });
-
-  it("give the path in the shell", () => {
-    expect(ui.pathOf({ $feature: "shop/ShelvesIn", Aisle: "Bakery" })).toBe("/shop/aisles/Bakery/shelves");
-    expect(ui.pathOf({ $feature: "shop/Basket" })).toBeNull();
   });
 
   it("read only what fits the template's kinds", () => {
