@@ -1,9 +1,10 @@
-import { DetailsForm, page, toastAndFollow, type Handler } from "../kit";
+import type { ModuleBuilder, Renderer } from "demos-common-ui";
+import { DetailsForm, page, toastAndFollow } from "../kit";
 
 // HandInItem: the clerk follows a link with nothing filled in, and the feature answers NeedsDetails,
 // which is shown as a form for what's missing. HandedIn says so, and goes back to the unclaimed items.
 
-const needsDetails: Handler = (element, body, host) => page(element, <>
+const needsDetails: Renderer = (element, body, host) => page(element, <>
   <h1>Hand in an item</h1>
   <p className="lp-lede">Say what was found, and at which station.</p>
   <DetailsForm link={body.LinkToHandIn} missing={body.Missing} submit="Hand it in" host={host} fields={[
@@ -13,7 +14,9 @@ const needsDetails: Handler = (element, body, host) => page(element, <>
   ]} />
 </>);
 
-const handedIn: Handler = (_, body, host) =>
+const handedIn: Renderer = (_, body, host) =>
   toastAndFollow(host, `Handed in: ${body.Item.Description}.`, body.LinkToUnclaimedItems);
 
-export const handInItem = { feature: "HandInItem", cases: { NeedsDetails: needsDetails, HandedIn: handedIn } };
+export default (office: ModuleBuilder) => office.addCommand("HandInItem")
+  .renderCase("NeedsDetails", needsDetails)
+  .renderCase("HandedIn", handedIn);

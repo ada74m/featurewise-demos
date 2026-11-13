@@ -1,4 +1,5 @@
-import { Anchor, Button, day, page, type Handler } from "../kit";
+import type { ModuleBuilder, Renderer } from "demos-common-ui";
+import { Anchor, Button, day, page } from "../kit";
 
 // YourLostReports: the traveller's reports, each with whatever the office has noticed may be theirs.
 // A match they can claim comes with a button; the feature leaves the link out when they can't.
@@ -23,7 +24,7 @@ function Match({ entry, host }) {
   );
 }
 
-const result: Handler = (element, body, host) => page(element, <>
+const result: Renderer = (element, body, host) => page(element, <>
   <h1>Your lost reports</h1>
   <p className="lp-lede">What you've told us you lost, and anything handed in that may be yours.</p>
   <div className="lp-bar">
@@ -43,4 +44,6 @@ const result: Handler = (element, body, host) => page(element, <>
       </div>}
 </>);
 
-export const yourLostReports = { feature: "YourLostReports", cases: { "": result } };
+export default (office: ModuleBuilder) => office.addQuery("YourLostReports")
+  .address("your-reports")
+  .render(result);

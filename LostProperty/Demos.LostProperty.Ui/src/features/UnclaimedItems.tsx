@@ -1,9 +1,10 @@
-import { Anchor, Button, day, page, type Handler } from "../kit";
+import type { ModuleBuilder, Renderer } from "demos-common-ui";
+import { Anchor, Button, day, page } from "../kit";
 
 // UnclaimedItems: everything waiting to be claimed, as a table. Each station is an anchor to what was
 // found there, and the clerk, and only the clerk, is offered a button to hand something in.
 
-const result: Handler = (element, body, host) => page(element, <>
+const result: Renderer = (element, body, host) => page(element, <>
   <h1>Unclaimed items</h1>
   <p className="lp-lede">Everything waiting to be claimed, oldest first.</p>
   <div className="lp-bar">
@@ -27,4 +28,6 @@ const result: Handler = (element, body, host) => page(element, <>
       </table>}
 </>);
 
-export const unclaimedItems = { feature: "UnclaimedItems", cases: { "": result } };
+export default (office: ModuleBuilder) => office.addQuery("UnclaimedItems")
+  .address("unclaimed-items")
+  .render(result);

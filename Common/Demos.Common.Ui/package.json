@@ -1,0 +1,17 @@
+{
+  "name": "demos-common-ui",
+  "private": true,
+  "type": "module",
+  "description": "What every demo's module for the Featurewise UI shell shares: the shell's contract, and a builder that makes a module from its features. Each demo's module uses it as a local package, from its source.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.0"
+  }
+}

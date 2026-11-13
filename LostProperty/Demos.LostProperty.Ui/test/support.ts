@@ -1,6 +1,6 @@
 import { act } from "react";
 import lostProperty from "../src/index";
-import type { Host, Link, ShellResponse } from "../src/shell";
+import type { Host, Link, ShellResponse } from "demos-common-ui";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -15,7 +15,7 @@ export function setUp() {
   // Renders the response to following a link to the feature, as the shell would; null if the module
   // leaves it to the generic renderer.
   const render = (feature: string, body: unknown) => {
-    const response: ShellResponse = { link: { $feature: `lost-property/${feature}` }, feature: `lost-property/${feature}`, status: 200, contentType: "application/json", body };
+    const response: ShellResponse = { link: { $feature: `lost-property/${feature}` }, feature: `lost-property/${feature}`, family: null, status: 200, contentType: "application/json", body };
     let cleared: (() => void) | null = null;
     act(() => { cleared = lostProperty.render(element, response, host); });
     return cleared;

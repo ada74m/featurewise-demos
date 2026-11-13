@@ -1,5 +1,5 @@
 // The shell's module contract, as featurewise-ui's src/contract.ts defines it. It's small and stable,
-// so the module keeps its own copy of the types rather than depending on the shell's package.
+// so the demos keep their own copy of the types rather than depending on the shell's package.
 
 export interface Link {
   $feature: string;
@@ -9,6 +9,7 @@ export interface Link {
 export interface ShellResponse {
   link: Link;
   feature: string;
+  family: string | null;
   status: number;
   contentType: string;
   body: unknown;

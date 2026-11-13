@@ -1,15 +1,10 @@
 import { useState, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
-import { linkToAddress, service } from "./addresses";
+import type { Host, Link } from "demos-common-ui";
+import { lostProperty } from "./module";
 import { styles } from "./styles";
-import type { Host, Link } from "./shell";
 
-// What every feature's handlers share: mounting a page, presenting a link, and asking for details.
-
-// A handler shows one feature's result, or one case of it, and returns a function that clears it. The
-// body is the result as the service sent it. Its shape is the feature's, so the handler's author reads it
-// there, rather than copying it into types here that nothing would check against the service.
-export type Handler = (element: HTMLElement, body: any, host: Host) => () => void;
+// What every feature's renderers share: mounting a page, presenting a link, and asking for details.
 
 // Mounts a page into the element the shell gives, with the office's styles.
 export function page(element: HTMLElement, content: ReactNode): () => void {
@@ -29,9 +24,8 @@ export function toastAndFollow(host: Host, message: string, next: Link): () => v
 // A link presented as an anchor: it has an href where the link has an address, so it can be opened in
 // a new tab or copied, and a click follows it through the shell.
 export function Anchor({ link, host, children }: { link: Link; host: Host; children: ReactNode }) {
-  const address = linkToAddress(link);
   return (
-    <a href={address === null ? "#" : `/${service}/${address}`}
+    <a href={lostProperty.pathOf(link) ?? "#"}
        onClick={event => {
          if (event.metaKey || event.ctrlKey || event.shiftKey)
            return;

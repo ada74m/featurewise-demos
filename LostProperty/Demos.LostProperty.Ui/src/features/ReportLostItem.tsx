@@ -1,9 +1,10 @@
-import { Anchor, Button, DetailsForm, day, page, toastAndFollow, type Handler } from "../kit";
+import type { ModuleBuilder, Renderer } from "demos-common-ui";
+import { Anchor, Button, DetailsForm, day, page, toastAndFollow } from "../kit";
 
 // ReportLostItem: a form for what's missing, then the reference. If the office already has something
 // like it, the traveller is offered the claim straight away.
 
-const needsDetails: Handler = (element, body, host) => page(element, <>
+const needsDetails: Renderer = (element, body, host) => page(element, <>
   <h1>Report something lost</h1>
   <p className="lp-lede">Tell us what you lost. If it's handed in, it'll appear on your reports.</p>
   <DetailsForm link={body.LinkToReport} missing={body.Missing} submit="Report it" host={host} fields={[
@@ -12,10 +13,10 @@ const needsDetails: Handler = (element, body, host) => page(element, <>
   ]} />
 </>);
 
-const reported: Handler = (_, body, host) =>
+const reported: Renderer = (_, body, host) =>
   toastAndFollow(host, `Reported. Your reference is ${body.Report.Reference}.`, body.LinkToYourReports);
 
-const mayAlreadyHaveIt: Handler = (element, body, host) =>
+const mayAlreadyHaveIt: Renderer = (element, body, host) =>
   page(element, <>
     <h1>We may already have it</h1>
     <div className="lp-notice">
@@ -28,7 +29,7 @@ const mayAlreadyHaveIt: Handler = (element, body, host) =>
     </div>
   </>);
 
-export const reportLostItem = {
-  feature: "ReportLostItem",
-  cases: { NeedsDetails: needsDetails, Reported: reported, MayAlreadyHaveIt: mayAlreadyHaveIt }
-};
+export default (office: ModuleBuilder) => office.addCommand("ReportLostItem")
+  .renderCase("NeedsDetails", needsDetails)
+  .renderCase("Reported", reported)
+  .renderCase("MayAlreadyHaveIt", mayAlreadyHaveIt);

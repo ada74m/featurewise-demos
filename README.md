@@ -52,12 +52,13 @@ As the `sample` service is (see its `PRINCIPLES.md`), with three additions:
 | `Common/Demos.Common.Local` | The same plumbing in memory, with what the local host needs to run the functions. |
 | `Common/Demos.Common.Functions` | The handlers every demo's functions share: the UI backend (`POST /{feature}`, and `GET /{feature}?link=` for queries), the scheduled worker (a job in every sandbox in use) and the queue worker (the workers events trigger, from DynamoDB's stream). |
 | `Common/Demos.Common.Testing` | What every demo's tests stand on: facilities in memory and over DynamoDB Local, with the demo's own. |
+| `Common/Demos.Common.Ui` | What every demo's module shares: the shell's contract, and `featurewiseModule`, which builds a module from its features: each query with its address, from a template such as `found-at/{Station}`, and each feature with a way to render its result, or each of its cases. Each module uses it as a local npm package. |
 | `LostProperty/` | The service `lost-property`: `Demos.LostProperty` (the core), `.Aws` and `.Local` (its facilities), `.Functions` (the UI backend, the queue worker and the scheduled worker, one zip with a handler each), `.Ui` (its module), `.Tests`, `Infrastructure/` and `demo.json`. |
 | `BoxOffice/` | The service `box-office`, in the same shape, with only a UI backend, since it has no workers. |
 | `SignIn/` | The demo sign-in: an identity provider, not a featurewise service, where a visitor becomes any persona the environment passes it, without a password. Tokens carry the visitor's sandbox. See `SignIn/README.md`. |
 | `Demos.Local` | Every demo in one process, each over facilities in memory of its own, with the shell. |
 
-Each service's `Infrastructure/` is the module an environment uses, built from the modules in `Common/Infrastructure/modules`; the sign-in's is `SignIn/Infrastructure`. Each module gives its first page an address, such as `/lost-property/unclaimed-items`, and leaves every other query to the shell's default address. `package.sh` builds a package for each demo and one for the sign-in, all at one version, and CI publishes them as `demos/lost-property/<version>`, `demos/box-office/<version>` and `demos/sign-in/<version>`. Each keeps the repository's layout, so an environment uses one as `…/demos/lost-property/<version>.zip//LostProperty/Infrastructure`.
+Each service's `Infrastructure/` is the module an environment uses, built from the modules in `Common/Infrastructure/modules`; the sign-in's is `SignIn/Infrastructure`. Each module gives its first page an address, such as `/lost-property/unclaimed-items`, and leaves every query it gives no address to the shell's default one. `package.sh` builds a package for each demo and one for the sign-in, all at one version, and CI publishes them as `demos/lost-property/<version>`, `demos/box-office/<version>` and `demos/sign-in/<version>`. Each keeps the repository's layout, so an environment uses one as `…/demos/lost-property/<version>.zip//LostProperty/Infrastructure`.
 
 Each demo's `demo.json` describes it: its title and chapter, what it is, the story its seed data tells, what to try, who a visitor can be in it, and the link that resets it. The sign-in offers its personas, the local host's `services.json` carries it, and the environment passes it to the shell, whose demo panel shows it above the demo's pages, with a button for each persona the text names and **Reset this demo**. `ResetDemo` forgets the demo's data in the visitor's sandbox, so its story starts again. Any address takes `?as=<persona>`, as a link from the book does.
 
@@ -65,7 +66,7 @@ Each demo's `demo.json` describes it: its title and chapter, what it is, the sto
 
 ```
 export GITHUB_PACKAGES_TOKEN=$(gh auth token)
-(cd LostProperty/Demos.LostProperty.Ui && npm install && npm run build)
+(cd LostProperty/Demos.LostProperty.Ui && npm install && npm run build)   # each module uses Common/Demos.Common.Ui
 (cd BoxOffice/Demos.BoxOffice.Ui && npm install && npm run build)
 (cd ../ui && npm install && npm run build)        # the shell, from a sibling checkout of featurewise-ui
 dotnet run --project Demos.Local
