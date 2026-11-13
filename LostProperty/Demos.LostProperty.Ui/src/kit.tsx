@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import type { Host, Link } from "demos-common-ui";
-import { lostProperty } from "./module";
+import { ui } from "./index";
 import { styles } from "./styles";
 
 // What every feature's renderers share: mounting a page, presenting a link, and asking for details.
@@ -22,10 +22,11 @@ export function toastAndFollow(host: Host, message: string, next: Link): () => v
 }
 
 // A link presented as an anchor: it has an href where the link has an address, so it can be opened in
-// a new tab or copied, and a click follows it through the shell.
+// a new tab or copied, and a click follows it through the shell. The index imports the features, which
+// import this file, so ui is read only when an anchor renders, by which time the index has made it.
 export function Anchor({ link, host, children }: { link: Link; host: Host; children: ReactNode }) {
   return (
-    <a href={lostProperty.pathOf(link) ?? "#"}
+    <a href={ui.pathOf(link) ?? "#"}
        onClick={event => {
          if (event.metaKey || event.ctrlKey || event.shiftKey)
            return;

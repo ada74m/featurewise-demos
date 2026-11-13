@@ -6,13 +6,13 @@ import type { Host, Link, ServiceModule } from "./shell";
 // isn't added is left to the shell's defaults: the generic renderer, and the default address for a
 // query. Workers aren't added at all, since nobody sees their results.
 //
-//   const lostProperty = featurewiseModule("lost-property", { home: "unclaimed-items" });
-//   lostProperty.addQuery("ItemsFoundAt").address("found-at/{Station}");
-//   lostProperty.addCommand("ClaimItem")
-//     .renderCase("Claimed", (element, body, host) => …)
-//     .renderCase("DoesntMatchReport", (element, body, host) => …);
+//   const ui = featurewiseModule("lost-property", { home: "unclaimed-items" });
+//   ui.addQuery("ItemsFoundAt").address("found-at/{Station}");
+//   ui.addCommand("ClaimItem")
+//     .renderCase("Claimed", claimItem.Claimed)
+//     .renderCase("DoesntMatchReport", claimItem.DoesntMatchReport);
 //
-// The builder is the module, so a module's file exports it as it is.
+// The builder is the module, so a module's index exports it as it is.
 
 // Shows a feature's result, or one case of it, in element, and returns a function that clears it. The
 // body is the result as the service sent it. Its shape is the feature's, so a renderer's author reads it

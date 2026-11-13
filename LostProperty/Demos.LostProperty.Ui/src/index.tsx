@@ -1,20 +1,41 @@
-import claimItem from "./features/ClaimItem";
-import handInItem from "./features/HandInItem";
-import itemsFoundAt from "./features/ItemsFoundAt";
-import reportLostItem from "./features/ReportLostItem";
-import unclaimedItems from "./features/UnclaimedItems";
-import yourLostReports from "./features/YourLostReports";
-import { lostProperty } from "./module";
+import { featurewiseModule } from "demos-common-ui";
+import * as claimItem from "./features/ClaimItem";
+import * as handInItem from "./features/HandInItem";
+import * as reportLostItem from "./features/ReportLostItem";
+import * as unclaimedItems from "./features/UnclaimedItems";
+import * as yourLostReports from "./features/YourLostReports";
 
-// The lost property office's module, dressing the office one feature at a time. A feature not added
-// here, such as DonatedToCharity, or a result case its file doesn't render, is left to the shell: its
-// generic renderer, and its default address for a query.
+// The lost property office's UI module, a feature at a time: each query's address, and each feature's
+// renderers, by result case. Each feature's renderers are in its file in features/. Anything not here,
+// such as DonatedToCharity, or ItemsFoundAt's result, is left to the shell: its generic renderer, and
+// its default address for a query. The service's own path leads to the unclaimed items.
 
-unclaimedItems(lostProperty);
-itemsFoundAt(lostProperty);
-yourLostReports(lostProperty);
-handInItem(lostProperty);
-reportLostItem(lostProperty);
-claimItem(lostProperty);
+export const ui = featurewiseModule("lost-property", { home: "unclaimed-items" });
 
-export default lostProperty;
+ui.addQuery("UnclaimedItems")
+  .address("unclaimed-items")
+  .render(unclaimedItems.result);
+
+ui.addQuery("ItemsFoundAt")
+  .address("found-at/{Station}");
+
+ui.addQuery("YourLostReports")
+  .address("your-reports")
+  .render(yourLostReports.result);
+
+ui.addCommand("HandInItem")
+  .renderCase("NeedsDetails", handInItem.NeedsDetails)
+  .renderCase("HandedIn", handInItem.HandedIn);
+
+ui.addCommand("ReportLostItem")
+  .renderCase("NeedsDetails", reportLostItem.NeedsDetails)
+  .renderCase("Reported", reportLostItem.Reported)
+  .renderCase("MayAlreadyHaveIt", reportLostItem.MayAlreadyHaveIt);
+
+ui.addCommand("ClaimItem")
+  .renderCase("Claimed", claimItem.Claimed)
+  .renderCase("DoesntMatchReport", claimItem.DoesntMatchReport)
+  .renderCase("AlreadyClaimed", claimItem.AlreadyClaimed)
+  .renderCase("NotFound", claimItem.NotFound);
+
+export default ui;
