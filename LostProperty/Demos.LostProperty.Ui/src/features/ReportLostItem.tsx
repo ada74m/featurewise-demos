@@ -1,10 +1,9 @@
 import { Anchor, Button, DetailsForm, day, page, toastAndFollow, type Handler } from "../kit";
-import type { FoundItem, Link, LostReport } from "../types";
 
 // ReportLostItem: a form for what's missing, then the reference. If the office already has something
 // like it, the traveller is offered the claim straight away.
 
-const needsDetails: Handler = (element, body: { Missing: string[]; LinkToReport: Link }, host) => page(element, <>
+const needsDetails: Handler = (element, body, host) => page(element, <>
   <h1>Report something lost</h1>
   <p className="lp-lede">Tell us what you lost. If it's handed in, it'll appear on your reports.</p>
   <DetailsForm link={body.LinkToReport} missing={body.Missing} submit="Report it" host={host} fields={[
@@ -13,10 +12,10 @@ const needsDetails: Handler = (element, body: { Missing: string[]; LinkToReport:
   ]} />
 </>);
 
-const reported: Handler = (_, body: { Report: LostReport; LinkToYourReports: Link }, host) =>
+const reported: Handler = (_, body, host) =>
   toastAndFollow(host, `Reported. Your reference is ${body.Report.Reference}.`, body.LinkToYourReports);
 
-const mayAlreadyHaveIt: Handler = (element, body: { Report: LostReport; Item: FoundItem; LinkToClaim: Link; LinkToYourReports: Link }, host) =>
+const mayAlreadyHaveIt: Handler = (element, body, host) =>
   page(element, <>
     <h1>We may already have it</h1>
     <div className="lp-notice">

@@ -1,23 +1,9 @@
 import { Anchor, Button, day, page, type Handler } from "../kit";
-import type { Host } from "../shell";
-import type { FoundItem, Link, LostReport } from "../types";
 
 // YourLostReports: the traveller's reports, each with whatever the office has noticed may be theirs.
 // A match they can claim comes with a button; the feature leaves the link out when they can't.
 
-interface Entry {
-  Report: LostReport;
-  PossibleMatch: FoundItem | null;
-  LinkToClaim: Link | null;
-}
-
-interface Result {
-  Reports: Entry[];
-  LinkToReport: Link;
-  LinkToUnclaimedItems: Link;
-}
-
-function Match({ entry, host }: { entry: Entry; host: Host }) {
+function Match({ entry, host }) {
   const { Report: report, PossibleMatch: item, LinkToClaim: claim } = entry;
   if (!item)
     return <p className="lp-none">Nothing like it has been handed in yet.</p>;
@@ -37,7 +23,7 @@ function Match({ entry, host }: { entry: Entry; host: Host }) {
   );
 }
 
-const result: Handler = (element, body: Result, host) => page(element, <>
+const result: Handler = (element, body, host) => page(element, <>
   <h1>Your lost reports</h1>
   <p className="lp-lede">What you've told us you lost, and anything handed in that may be yours.</p>
   <div className="lp-bar">

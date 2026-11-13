@@ -6,6 +6,8 @@
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
     "strict": true,
+    // A result's shape is its feature's, in the service; the handlers read it from there, untyped.
+    "noImplicitAny": false,
     "noUncheckedIndexedAccess": true,
     "noEmit": true
   },

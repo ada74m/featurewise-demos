@@ -1,17 +1,9 @@
 import { Anchor, Button, day, page, type Handler } from "../kit";
-import type { FoundItem, Link } from "../types";
 
 // UnclaimedItems: everything waiting to be claimed, as a table. Each station is an anchor to what was
 // found there, and the clerk, and only the clerk, is offered a button to hand something in.
 
-interface Result {
-  Items: { Item: FoundItem; LinkToStation: Link }[];
-  LinkToHandIn: Link | null;
-  LinkToYourReports: Link;
-  LinkToDonated: Link;
-}
-
-const result: Handler = (element, body: Result, host) => page(element, <>
+const result: Handler = (element, body, host) => page(element, <>
   <h1>Unclaimed items</h1>
   <p className="lp-lede">Everything waiting to be claimed, oldest first.</p>
   <div className="lp-bar">

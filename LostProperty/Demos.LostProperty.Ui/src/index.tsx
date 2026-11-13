@@ -14,7 +14,7 @@ import type { ServiceModule } from "./shell";
 const dressed = [unclaimedItems, handInItem, yourLostReports, claimItem, reportLostItem];
 
 const handlers = new Map<string, Handler>(dressed.flatMap(({ feature, cases }) =>
-  Object.entries(cases).map(([name, handler]) => [`${service}/${feature}:${name}`, handler as Handler] as const)));
+  Object.entries(cases).map(([name, handler]) => [`${service}/${feature}:${name}`, handler] as const)));
 
 const lostProperty: ServiceModule = {
   addressToLink,
@@ -23,7 +23,7 @@ const lostProperty: ServiceModule = {
   render(element, response, host) {
     const body = response.body as { $case?: string } | null;
     const handler = handlers.get(`${response.feature}:${body?.$case ?? ""}`);
-    return handler ? handler(element, body as never, host) : null;
+    return handler ? handler(element, body, host) : null;
   }
 };
 
