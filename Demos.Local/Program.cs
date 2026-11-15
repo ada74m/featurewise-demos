@@ -141,7 +141,7 @@ async Task CollectForCharity(CancellationToken cancellationToken)
     try
     {
         while (await timer.WaitForNextTickAsync(cancellationToken))
-            await RunJob(new JsonObject { ["$feature"] = $"{LostProperty.Service.Id}/HandleCharityCollectionDue" });
+            await RunJob(new JsonObject { ["$worker"] = $"{LostProperty.Service.Id}/HandleCharityCollectionDue" });
     }
     catch (OperationCanceledException)
     {

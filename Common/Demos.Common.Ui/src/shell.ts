@@ -1,15 +1,18 @@
 // The shell's module contract, as featurewise-ui's src/contract.ts defines it. It's small and stable,
 // so the demos keep their own copy of the types rather than depending on the shell's package.
 
+// A link names its feature, qualified by its service, in the one property that says the feature's family.
 export interface Link {
-  $feature: string;
+  $query?: string;
+  $command?: string;
+  $worker?: string;
   [argument: string]: unknown;
 }
 
 export interface ShellResponse {
   link: Link;
   feature: string;
-  family: string | null;
+  family: "query" | "command" | "worker";
   status: number;
   contentType: string;
   body: unknown;

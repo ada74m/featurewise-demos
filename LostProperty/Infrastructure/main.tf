@@ -49,7 +49,7 @@ module "scheduled_worker" {
   schedules = {
     charity-collection = {
       expression = "cron(0 6 * * ? *)"
-      link       = jsonencode({ "$feature" = "${local.service}/HandleCharityCollectionDue" })
+      link       = jsonencode({ "$worker" = "${local.service}/HandleCharityCollectionDue" })
     }
   }
 }

@@ -77,7 +77,7 @@ export class AddressTemplate {
   // Featurewise stamps every link with the invocation that made it, for tracing, and leaves it out of a
   // link's equality, so an address leaves it out too.
   write(link: Link): string | null {
-    const { $feature: _, CausedBy: __, ...args } = link;
+    const { $query: _q, $command: _c, $worker: _w, CausedBy: _, ...args } = link;
     const names = this.names();
     if (Object.keys(args).length !== names.length || !names.every(name => name in args))
       return null;

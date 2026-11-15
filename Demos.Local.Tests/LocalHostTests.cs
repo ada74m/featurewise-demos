@@ -41,6 +41,29 @@ public class LocalHostTests : IDisposable
     }
 
     [Fact]
+    public async Task ALinkInAResultSaysWhatFollowingItWillDo()
+    {
+        var result = await Post("UnclaimedItems", Clerk, "{}");
+
+        Assert.Equal("lost-property/HandInItem", result["LinkToHandIn"]!["$command"]!.GetValue<string>());
+        Assert.Equal("lost-property/YourLostReports", result["LinkToYourReports"]!["$query"]!.GetValue<string>());
+    }
+
+    [Fact]
+    public async Task ALinkPostedUnderAnotherFamilysNameIsRefused()
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, "/api/lost-property/HandInItem")
+        {
+            Content = new StringContent("""{"$query":"lost-property/HandInItem","Category":"Hat","Description":"A trilby","Station":"Leeds"}""", Encoding.UTF8, "application/json")
+        };
+        request.Headers.Authorization = Token(Clerk);
+
+        var response = await _client.SendAsync(request);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
     public async Task ATravellerHearsOfAnItemSoonAfterAClerkHandsItIn()
     {
         var handedIn = await Post("HandInItem", Clerk, """{"Category":"Umbrella","Description":"Black","Station":"Crewe"}""");

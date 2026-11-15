@@ -9,10 +9,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Demos.Functions;
 
-// A demo's UI backend: invokes its queries and commands over API Gateway's HTTP API, each as
-// POST /{feature} with its arguments as the JSON body, so the UI follows a link the same way whatever it
-// leads to. A query may also be invoked as GET /{feature}?link=<its arguments as JSON>, which a browser may
-// repeat, as when a page is reloaded; a command can't, so a reload never runs one again. Its contract is
+// A demo's UI backend: invokes its queries and commands over API Gateway's HTTP API. A query is
+// GET /{feature}?link=<its link as JSON>, which a browser may repeat, as when a page is reloaded; a command
+// is POST /{feature} with its link as the body, which a browser never repeats, so a reload never runs one
+// again. A query may be posted too, but a command can't be got. A link says its feature's family, so the
+// UI knows which to use before it follows one. Its contract is
 // the features themselves, links and result cases included, which suits a UI shipped with the service and
 // no one else. Each demo's UiBackend function holds one, given the demo's features and facilities.
 public class UiBackend
@@ -36,7 +37,7 @@ public class UiBackend
 
     public async Task<APIGatewayHttpApiV2ProxyResponse> Handle(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
     {
-        // The URL names the service and the path the feature, which a link's $feature qualifies with the
+        // The URL names the service and the path the feature, which a link's JSON qualifies with the
         // service, as in lost-property/ClaimItem.
         var feature = ValueOf(request.PathParameters, "feature") ?? "";
         var qualified = $"{_features.Service}/{feature}";
@@ -79,14 +80,23 @@ public class UiBackend
     }
 
     // The link to the qualified feature that the arguments make. The UI may post bare arguments as well as
-    // a link it was given, whose $feature must name the same feature.
+    // a link it was given, which names its feature in a property that says its family, as in
+    // "$command":"lost-property/ClaimItem". Such a link must name this feature, in the right property.
     private Link ReadLink(string qualified, JsonObject arguments)
     {
-        if (arguments.TryGetPropertyValue(Features.FeatureNameProperty, out var named)
-            && !(named is JsonValue value && value.TryGetValue<string>(out var name) && name == qualified))
-            throw new JsonException($"the arguments name a feature other than {qualified}");
+        var property = Features.FeatureProperty(_features.FamilyOf(qualified)!.Value);
+        foreach (var family in Enum.GetValues<FeatureFamily>().Select(Features.FeatureProperty).Append("$feature"))
+        {
+            if (!arguments.TryGetPropertyValue(family, out var named))
+                continue;
+            if (!(named is JsonValue value && value.TryGetValue<string>(out var name) && name == qualified))
+                throw new JsonException($"the arguments name a feature other than {qualified}");
+            if (family != property && family != "$feature")
+                throw new JsonException($"{qualified} is named in {property}, not {family}");
+            arguments.Remove(family);
+        }
 
-        arguments[Features.FeatureNameProperty] = qualified;
+        arguments[property] = qualified;
         return arguments.Deserialize<Link>(_json) ?? throw new JsonException("the arguments are null");
     }
 

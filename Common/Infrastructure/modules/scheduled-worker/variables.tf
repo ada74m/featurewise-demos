@@ -23,7 +23,7 @@ variable "demos_policy_json" {
 }
 
 variable "schedules" {
-  description = "The jobs to run, by schedule name: each schedule's expression, and its job's link as JSON, such as jsonencode({ \"$feature\" = \"demos/HandleCharityCollectionDue\" })."
+  description = "The jobs to run, by schedule name: each schedule's expression, and its job's link as JSON, such as jsonencode({ \"$worker\" = \"lost-property/HandleCharityCollectionDue\" })."
   type = map(object({
     expression = string
     link       = string

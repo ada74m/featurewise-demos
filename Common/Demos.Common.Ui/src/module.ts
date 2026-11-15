@@ -80,13 +80,13 @@ export function featurewiseModule(service: string, options: ModuleOptions = {}):
     for (const [feature, template] of addresses) {
       const args = template.read(path);
       if (args)
-        return { $feature: feature, ...args };
+        return { $query: feature, ...args };
     }
     return null;
   }
 
   function linkToAddress(link: Link): string | null {
-    return addresses.get(link.$feature)?.write(link) ?? null;
+    return link.$query === undefined ? null : addresses.get(link.$query)?.write(link) ?? null;
   }
 
   return {

@@ -24,7 +24,7 @@ export function setUp() {
   // Renders the response to following a link to the feature, as the shell would; null if the module
   // leaves it to the generic renderer.
   const render = (feature: string, body: unknown) => {
-    const response: ShellResponse = { link: { $feature: `lost-property/${feature}` }, feature: `lost-property/${feature}`, family: null, status: 200, contentType: "application/json", body };
+    const response: ShellResponse = { link: link(feature), feature: `lost-property/${feature}`, family: familyOf(feature), status: 200, contentType: "application/json", body };
     let cleared: (() => void) | null = null;
     act(() => { cleared = lostProperty.render(element, response, host); });
     return cleared;
@@ -50,7 +50,15 @@ export function setUp() {
   return { host, element, followed, toasts, render, click, type, submit };
 }
 
-export const link = (feature: string, args: Record<string, unknown> = {}): Link => ({ $feature: `lost-property/${feature}`, ...args });
+// The office's queries; every other feature a test names is a command.
+const QUERIES = ["UnclaimedItems", "ItemsFoundAt", "YourLostReports", "DonatedToCharity"];
+const familyOf = (feature: string) => (QUERIES.includes(feature) ? "query" as const : "command" as const);
+
+// A link to one of the office's features, named in the property its family uses.
+export const link = (feature: string, args: Record<string, unknown> = {}): Link =>
+  familyOf(feature) === "query"
+    ? { $query: `lost-property/${feature}`, ...args }
+    : { $command: `lost-property/${feature}`, ...args };
 
 export const item = (id: string, description: string, station = "Crewe", status = "Unclaimed", claimedBy: string | null = null) =>
   ({ Id: id, Category: "Umbrella", Description: description, Station: station, HandedInAt: "2026-11-04T09:00:00Z", Status: status, ClaimedBy: claimedBy });

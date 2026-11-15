@@ -5,7 +5,7 @@ const host: Host = { follow: () => {}, toast: () => {}, embed: () => () => {}, p
 const element = {} as HTMLElement;
 
 const response = (feature: string, body: unknown): ShellResponse =>
-  ({ link: { $feature: feature }, feature, family: "command", status: 200, contentType: "application/json", body });
+  ({ link: { $command: feature }, feature, family: "command", status: 200, contentType: "application/json", body });
 
 // A renderer that records what it was given.
 function recording() {
@@ -28,10 +28,10 @@ describe("a module's addresses", () => {
 
   it("lead from a query's link to its address and back", () => {
     for (const [address, link] of [
-      ["aisles", { $feature: "shop/Aisles" }],
-      ["aisles/Tins%20and%20jars/shelves", { $feature: "shop/ShelvesIn", Aisle: "Tins and jars" }],
-      ["aisles/Bakery/shelves/3", { $feature: "shop/Shelf", Aisle: "Bakery", Number: 3 }],
-      ["deliveries/2026-11-13", { $feature: "shop/DeliveriesOn", On: "2026-11-13" }]
+      ["aisles", { $query: "shop/Aisles" }],
+      ["aisles/Tins%20and%20jars/shelves", { $query: "shop/ShelvesIn", Aisle: "Tins and jars" }],
+      ["aisles/Bakery/shelves/3", { $query: "shop/Shelf", Aisle: "Bakery", Number: 3 }],
+      ["deliveries/2026-11-13", { $query: "shop/DeliveriesOn", On: "2026-11-13" }]
     ] as const) {
       expect(ui.linkToAddress(link)).toBe(address);
       expect(ui.addressToLink(address)).toEqual(link);
@@ -39,8 +39,8 @@ describe("a module's addresses", () => {
   });
 
   it("take the home address for the service's own path, and ignore a query string", () => {
-    expect(ui.addressToLink("")).toEqual({ $feature: "shop/Aisles" });
-    expect(ui.addressToLink("aisles?utm=book")).toEqual({ $feature: "shop/Aisles" });
+    expect(ui.addressToLink("")).toEqual({ $query: "shop/Aisles" });
+    expect(ui.addressToLink("aisles?utm=book")).toEqual({ $query: "shop/Aisles" });
   });
 
   it("read only what fits the template's kinds", () => {
@@ -52,19 +52,19 @@ describe("a module's addresses", () => {
   });
 
   it("leave out the invocation that made the link, which isn't one of its arguments", () => {
-    expect(ui.linkToAddress({ $feature: "shop/ShelvesIn", Aisle: "Bakery", CausedBy: "00-4bf9-00f0-01" })).toBe("aisles/Bakery/shelves");
+    expect(ui.linkToAddress({ $query: "shop/ShelvesIn", Aisle: "Bakery", CausedBy: "00-4bf9-00f0-01" })).toBe("aisles/Bakery/shelves");
   });
 
   it("leave a link to the shell's default unless the address holds exactly its arguments", () => {
-    expect(ui.linkToAddress({ $feature: "shop/ShelvesIn", Aisle: "Bakery", Extra: 1 })).toBeNull();
-    expect(ui.linkToAddress({ $feature: "shop/ShelvesIn" })).toBeNull();
-    expect(ui.linkToAddress({ $feature: "shop/ShelvesIn", Aisle: null })).toBeNull();
-    expect(ui.linkToAddress({ $feature: "shop/Shelf", Aisle: "Bakery", Number: "3" })).toBeNull();
+    expect(ui.linkToAddress({ $query: "shop/ShelvesIn", Aisle: "Bakery", Extra: 1 })).toBeNull();
+    expect(ui.linkToAddress({ $query: "shop/ShelvesIn" })).toBeNull();
+    expect(ui.linkToAddress({ $query: "shop/ShelvesIn", Aisle: null })).toBeNull();
+    expect(ui.linkToAddress({ $query: "shop/Shelf", Aisle: "Bakery", Number: "3" })).toBeNull();
   });
 
   it("are given only to the queries that ask for one", () => {
-    expect(ui.linkToAddress({ $feature: "shop/Basket" })).toBeNull();
-    expect(ui.linkToAddress({ $feature: "shop/BuyThing" })).toBeNull();
+    expect(ui.linkToAddress({ $query: "shop/Basket" })).toBeNull();
+    expect(ui.linkToAddress({ $command: "shop/BuyThing" })).toBeNull();
     expect("address" in ui.addCommand("ReturnThing")).toBe(false);
   });
 
