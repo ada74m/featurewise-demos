@@ -5,7 +5,7 @@
   "about": [
     "A railway station's lost property office. Its queries say what's there, its commands hand things in and claim them, and two workers act when nobody is waiting: one when something is handed in, and one on a schedule.",
     "Each page offers links to what you can do next, but only the ones that would work for you now. And a claim that fails says what you can do instead.",
-    "Chapter 3 shows it plain, as the shell's generic renderer does. Chapter 5 dresses it, one feature at a time, and leaves two features plain. The services page, under the cog, switches between the two."
+    "Chapter 3 shows it plain, as the shell's generic renderer does. Chapter 5 dresses it, one feature at a time, and leaves two features plain. The view switch above moves between the two."
   ],
   "storySoFar": [
     "Six things are waiting to be claimed, from a left glove to a set of false teeth (upper only). The roller skate and the library book have waited three months, so the next charity collection takes them.",

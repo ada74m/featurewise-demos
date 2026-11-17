@@ -82,6 +82,7 @@ app.MapPost("/jobs", async (HttpContext http) =>
 app.MapGet("/services.json", () => Results.Json(new
 {
     @default = $"/{LostProperty.Service.Id}/unclaimed-items",
+    title = "Featurewise demos",
     services = modules.Keys.ToDictionary(service => service, service => (object)new { module = $"/modules/{service}/index.js", bff = $"/api/{service}" }),
     demos
 }));
