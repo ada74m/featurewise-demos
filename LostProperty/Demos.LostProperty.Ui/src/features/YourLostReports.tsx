@@ -10,7 +10,7 @@ function Match({ entry, host }) {
     return <p className="lp-none">Nothing like it has been handed in yet.</p>;
   if (claim)
     return (
-      <div className="lp-match">
+      <div className="fw-row lp-match">
         <p>We may have it: {item.Description}, handed in at {item.Station} on {day(item.HandedInAt)}.</p>
         <Button link={claim} host={host} primary>Claim it</Button>
       </div>
@@ -27,15 +27,15 @@ function Match({ entry, host }) {
 export const result: Renderer = (element, body, host) => page(element, <>
   <h1>Your lost reports</h1>
   <p className="lp-lede">What you've told us you lost, and anything handed in that may be yours.</p>
-  <div className="lp-bar">
+  <div className="fw-row lp-bar">
     <Button link={body.LinkToReport} host={host} primary>Report something lost</Button>
     <Anchor link={body.LinkToUnclaimedItems} host={host}>Unclaimed items</Anchor>
   </div>
   {body.Reports.length === 0
     ? <p className="lp-none">You haven't reported anything lost.</p>
-    : <div className="lp-cards">
+    : <div className="fw-stack">
         {body.Reports.map(entry => (
-          <section key={entry.Report.Reference} className="lp-card">
+          <section key={entry.Report.Reference} className="lp-panel">
             <h2>{entry.Report.Description}</h2>
             <span className="lp-category">{entry.Report.Category} · reported {day(entry.Report.ReportedAt)} · reference {entry.Report.Reference}</span>
             <Match entry={entry} host={host} />

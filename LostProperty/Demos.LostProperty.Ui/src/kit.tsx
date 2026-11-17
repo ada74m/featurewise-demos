@@ -54,7 +54,7 @@ export function DetailsForm({ link, fields, missing, submit, host }: {
     Object.fromEntries(fields.map(field => [field.name, typeof link[field.name] === "string" ? link[field.name] as string : ""])));
 
   return (
-    <form className="lp-form" onSubmit={event => {
+    <form className="fw-stack lp-panel" onSubmit={event => {
       event.preventDefault();
       host.follow({ ...link, ...values });
     }}>
@@ -65,9 +65,7 @@ export function DetailsForm({ link, fields, missing, submit, host }: {
                  onChange={event => setValues({ ...values, [field.name]: event.target.value })} />
         </label>
       ))}
-      <div className="fw-actions">
-        <button type="submit" className="fw-primary">{submit}</button>
-      </div>
+      <button type="submit" className="fw-primary">{submit}</button>
     </form>
   );
 }

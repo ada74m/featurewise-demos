@@ -23,7 +23,7 @@ export const MayAlreadyHaveIt: Renderer = (element, body, host) =>
       <p>Your reference is {body.Report.Reference}.</p>
       <p>{body.Item.Description} was handed in at {body.Item.Station} on {day(body.Item.HandedInAt)}.</p>
     </div>
-    <div className="lp-bar">
+    <div className="fw-row lp-bar">
       <Button link={body.LinkToClaim} host={host} primary>Claim it</Button>
       <Anchor link={body.LinkToYourReports} host={host}>Not mine: see your reports</Anchor>
     </div>

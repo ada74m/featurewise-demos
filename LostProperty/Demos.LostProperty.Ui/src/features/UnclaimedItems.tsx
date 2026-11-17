@@ -7,7 +7,7 @@ import { Anchor, Button, day, page } from "../kit";
 export const result: Renderer = (element, body, host) => page(element, <>
   <h1>Unclaimed items</h1>
   <p className="lp-lede">Everything waiting to be claimed, oldest first.</p>
-  <div className="lp-bar">
+  <div className="fw-row lp-bar">
     {body.LinkToHandIn && <Button link={body.LinkToHandIn} host={host} primary>Hand in an item</Button>}
     <Anchor link={body.LinkToYourReports} host={host}>Your lost reports</Anchor>
     <Anchor link={body.LinkToDonated} host={host}>Donated to charity</Anchor>
