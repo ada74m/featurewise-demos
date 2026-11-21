@@ -14,6 +14,6 @@
     "vitest": "^5.1.0"
   },
   "dependencies": {
-    "demos-common-ui": "file:../../Common/Demos.Common.Ui"
+    "@ada74m/featurewise-ui": "0.1.0-preview.22"
   }
 }

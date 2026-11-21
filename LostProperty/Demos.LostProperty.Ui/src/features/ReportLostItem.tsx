@@ -1,4 +1,4 @@
-import type { Renderer } from "demos-common-ui";
+import type { Renderer } from "@ada74m/featurewise-ui";
 import { Anchor, Button, DetailsForm, day, page, toastAndFollow } from "../kit";
 
 // ReportLostItem: a form for what's missing, then the reference. If the office already has something

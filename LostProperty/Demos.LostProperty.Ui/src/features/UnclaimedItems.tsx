@@ -1,4 +1,4 @@
-import type { Renderer } from "demos-common-ui";
+import type { Renderer } from "@ada74m/featurewise-ui";
 import { Anchor, Button, day, page } from "../kit";
 
 // UnclaimedItems: everything waiting to be claimed, as a table. Each station is an anchor to what was

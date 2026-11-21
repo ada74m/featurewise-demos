@@ -1,4 +1,4 @@
-import type { Renderer } from "demos-common-ui";
+import type { Renderer } from "@ada74m/featurewise-ui";
 import { Anchor, DetailsForm, page, toastAndFollow } from "../kit";
 
 // ClaimItem: Claimed says where to collect the item, and goes to the traveller's reports. A reference

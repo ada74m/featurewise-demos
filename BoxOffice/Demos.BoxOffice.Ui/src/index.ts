@@ -1,4 +1,4 @@
-import { featurewiseModule } from "demos-common-ui";
+import { featurewiseModule } from "@ada74m/featurewise-ui";
 
 // The box office's UI module. It gives the box office's first page the address "performances", and nothing
 // else: every other query gets the shell's default address, and every result the shell's generic

@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
-import type { Host, Link } from "demos-common-ui";
+import type { Host, Link } from "@ada74m/featurewise-ui";
 import { styles } from "./styles";
 
 // What every feature's renderers share: mounting a page, presenting a link, and asking for details.

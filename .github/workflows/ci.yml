@@ -53,11 +53,16 @@ jobs:
           cache: npm
           cache-dependency-path: "*/Demos.*.Ui/package-lock.json"
 
+      # Each module builds with @ada74m/featurewise-ui, the shell's contract and module builder, from the
+      # owner's GitHub Packages registry, which its .npmrc names. The package must grant this repository
+      # read access (its settings: Manage Actions access).
       - name: Test and build each demo's module
         run: |
           for module in */Demos.*.Ui; do
             (cd "$module" && npm ci && npm test && npm run build)
           done
+        env:
+          GITHUB_PACKAGES_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: hashicorp/setup-terraform@v4
         with:
@@ -84,6 +89,8 @@ jobs:
 
       - name: Package
         run: ./package.sh "${{ steps.version.outputs.version }}" out
+        env:
+          GITHUB_PACKAGES_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/upload-artifact@v7
         with:

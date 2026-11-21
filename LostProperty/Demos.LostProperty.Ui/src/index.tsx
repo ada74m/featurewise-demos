@@ -1,4 +1,4 @@
-import { featurewiseModule } from "demos-common-ui";
+import { featurewiseModule } from "@ada74m/featurewise-ui";
 import * as claimItem from "./features/ClaimItem";
 import * as handInItem from "./features/HandInItem";
 import * as reportLostItem from "./features/ReportLostItem";
