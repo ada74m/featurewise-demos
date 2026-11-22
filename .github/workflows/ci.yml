@@ -98,11 +98,12 @@ jobs:
           path: out/*-${{ steps.version.outputs.version }}.zip
           if-no-files-found: error
 
-  # Needs the estate's bootstrap: the repository variables AWS_REGION, ARTIFACTS_BUCKET and
-  # PUBLISH_ROLE_ARN, and the role it names, which trusts only this repository's main branch.
+  # Needs the estate's bootstrap: the repository variable AWS_REGION, the secrets ARTIFACTS_BUCKET and
+  # PUBLISH_ROLE_ARN (secrets, so the logs don't show the account they name), and the role it names,
+  # which trusts only this repository's main branch.
   publish:
     needs: build
-    if: github.event_name == 'push' && vars.ARTIFACTS_BUCKET != ''
+    if: github.event_name == 'push' && vars.AWS_REGION != ''
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -118,14 +119,14 @@ jobs:
 
       - uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: ${{ vars.PUBLISH_ROLE_ARN }}
+          role-to-assume: ${{ secrets.PUBLISH_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
 
       # The publish role may write only under demos/, so each package is published there.
       - name: Publish the packages
         run: |
           for package in lost-property box-office sign-in; do
-            aws s3 cp "$package-$VERSION.zip" "s3://${{ vars.ARTIFACTS_BUCKET }}/demos/$package/$VERSION.zip" --no-progress
+            aws s3 cp "$package-$VERSION.zip" "s3://${{ secrets.ARTIFACTS_BUCKET }}/demos/$package/$VERSION.zip" --no-progress
           done
 
       - name: Tag the commit
