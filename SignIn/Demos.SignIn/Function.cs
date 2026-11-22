@@ -203,9 +203,9 @@ public class Function
         var page = new StringBuilder("""
             <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
             <title>Choose who to be</title>
-            <style>body{font:16px system-ui,sans-serif;max-width:32rem;margin:3rem auto;padding:0 1rem;color:#222}
-            h2{font-size:1rem;color:#666;margin:1.5rem 0 .5rem}a{display:inline-block;margin:0 .5rem .5rem 0;padding:.4rem .9rem;
-            border:1px solid #2563eb;border-radius:999px;color:#2563eb;text-decoration:none}a:hover{background:#eff4ff}</style>
+            <style>body{font:16px system-ui,sans-serif;max-width:32rem;margin:3rem auto;padding:0 1rem;color:#1d1d1f;background:#f5f5f7}
+            h1{color:#2e5f85}h2{font-size:1rem;color:#6e6e73;margin:1.5rem 0 .5rem}a{display:inline-block;margin:0 .5rem .5rem 0;padding:.4rem .9rem;
+            border:1px solid #2e5f85;border-radius:999px;color:#2e5f85;background:#fff;text-decoration:none}a:hover{background:#e6eef4}</style>
             </head><body><h1>Choose who to be</h1><p>There are no passwords: pick anyone. Whoever you are, the demos remember what you do for a week, in a sandbox of your own.</p>
             """);
         foreach (var demo in _personas.GroupBy(persona => persona.Demo))
