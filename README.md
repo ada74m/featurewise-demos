@@ -74,3 +74,7 @@ dotnet run --project Demos.Local
 To run the DynamoDB tests too, start DynamoDB Local (`docker run -d -p 8000:8000 amazon/dynamodb-local`) and set `DYNAMODB_LOCAL=http://localhost:8000` before `dotnet test`; without it they're skipped.
 
 Then open the URL it prints, sign in from the pill as any persona, and follow the links. The lost property office is at `/lost-property/unclaimed-items`, and the box office at `/box-office/performances`. Locally, events reach their workers as soon as they're committed, and the charity collects every minute.
+
+## Licence
+
+MIT: see `LICENSE`.
