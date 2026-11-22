@@ -64,8 +64,7 @@ Each demo's `demo.json` describes it: its title and chapter, what it is, the sto
 ## Running locally
 
 ```
-export GITHUB_PACKAGES_TOKEN=$(gh auth token)
-(cd LostProperty/Demos.LostProperty.Ui && npm install && npm run build)   # each module builds with @ada74m/featurewise-ui
+(cd LostProperty/Demos.LostProperty.Ui && npm install && npm run build)   # each module builds with @featurewise/ui
 (cd BoxOffice/Demos.BoxOffice.Ui && npm install && npm run build)
 (cd ../ui && npm install && npm run build)        # the shell, from a sibling checkout of featurewise-ui
 dotnet run --project Demos.Local

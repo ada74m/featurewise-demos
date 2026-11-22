@@ -1,4 +1,4 @@
-import type { Renderer } from "@ada74m/featurewise-ui";
+import type { Renderer } from "@featurewise/ui";
 import { Anchor, Button, day, page } from "../kit";
 
 // YourLostReports: the traveller's reports, each with whatever the office has noticed may be theirs.

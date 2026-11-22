@@ -17,7 +17,7 @@
     "vitest": "^5.1.0"
   },
   "dependencies": {
-    "@ada74m/featurewise-ui": "0.1.0-preview.22",
+    "@featurewise/ui": "0.1.0-preview.27",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   }

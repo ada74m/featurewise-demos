@@ -1,4 +1,4 @@
-import type { Renderer } from "@ada74m/featurewise-ui";
+import type { Renderer } from "@featurewise/ui";
 import { DetailsForm, page, toastAndFollow } from "../kit";
 
 // HandInItem: the clerk follows a link with nothing filled in, and the feature answers NeedsDetails,

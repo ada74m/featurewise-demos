@@ -1,6 +1,6 @@
 import { act } from "react";
 import lostProperty from "../src/index";
-import type { Host, Link, ShellResponse } from "@ada74m/featurewise-ui";
+import type { Host, Link, ShellResponse } from "@featurewise/ui";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
