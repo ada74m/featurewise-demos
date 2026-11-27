@@ -1,7 +1,7 @@
 {
   "id": "box-office",
   "title": "The theatre box office",
-  "chapter": "6. Hypermedia idioms",
+  "topic": "Hypermedia idioms",
   "about": [
     "A small theatre's box office, selling seats for the four performances of The Pirates of Penge. Each performance offers only the links that would work for you now, and every result that says no says what you can do instead."
   ],

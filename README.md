@@ -1,10 +1,10 @@
 # Featurewise demos
 
-Small, live demos of the ideas in *Featurewise Organisation*, each in a micro-domain of its own. Each demo is a Featurewise service of its own, deployed on its own, and shown through the UI shell. The box office is shown by its generic renderer, so what a visitor sees is the features' own output: their result cases, and the links appearing and disappearing as the persona changes. The lost property office is dressed, feature by feature, for chapter 5, with two features still generic; the **View** switch beside its pages turns its dressing off, to compare. The book's code samples come from here.
+Small, live demos of the ideas in *Featurewise Organisation*, each in a micro-domain of its own. Each demo is a Featurewise service of its own, deployed on its own, and shown through the UI shell. The box office is shown by its generic renderer, so what a visitor sees is the features' own output: their result cases, and the links appearing and disappearing as the persona changes. The lost property office is dressed, feature by feature, with two features still generic; the **View** switch beside its pages turns its dressing off, to compare. The book's code samples come from here.
 
-Built so far: the lost property office, for chapters 1 and 3, and the theatre box office, for chapters 6 and 7.
+Built so far: the lost property office, for features and links, and the theatre box office, for hypermedia idioms.
 
-## The lost property office (chapters 1 and 3)
+## The lost property office (features and links)
 
 The service `lost-property`, in `LostProperty/`. A railway station's lost property office, showing a feature as a whole job, a command beside a query, both kinds of worker, result cases, and naming for each family.
 
@@ -22,7 +22,7 @@ The service `lost-property`, in `LostProperty/`. A railway station's lost proper
 
 The personas are a traveller, who has already reported losing an umbrella, and a clerk. Hand in an umbrella as the clerk, switch to the traveller, and `YourLostReports` shows it, with a link to claim it. Matching works in either order: a report of something already handed in is matched as it's made. Both `HandleItemHandedIn` and `ReportLostItem` apply the rule in `Matches`, under which a report is still looking until its traveller claims its match, so a report whose match went to someone else or to charity is matched again.
 
-## The theatre box office (chapters 6 and 7)
+## The theatre box office (hypermedia idioms)
 
 The service `box-office`, in `BoxOffice/`. A small theatre's box office, selling seats for the four performances of *The Pirates of Penge*. It shows links offered only when they'd work, by the state of things and by who's asking, links that bring the next step to you, and result cases that turn an obstacle into a way forward.
 
@@ -59,7 +59,7 @@ As the `sample` service is (see its `PRINCIPLES.md`), with three additions:
 
 Each service's `Infrastructure/` is the module an environment uses, built from the modules in `Common/Infrastructure/modules`; the sign-in's is `SignIn/Infrastructure`. Each module gives its first page an address, such as `/lost-property/unclaimed-items`, and leaves every query it gives no address to the shell's default one. `package.sh` builds a package for each demo and one for the sign-in, all at one version, and CI publishes them as `demos/lost-property/<version>`, `demos/box-office/<version>` and `demos/sign-in/<version>`. Each keeps the repository's layout, so an environment uses one as `…/demos/lost-property/<version>.zip//LostProperty/Infrastructure`.
 
-Each demo's `demo.json` describes it: its title and chapter, what it is, the story its seed data tells, what to try, who a visitor can be in it, and the link that resets it. The sign-in offers its personas, the local host's `services.json` carries it, and the environment passes it to the shell, whose demo panel shows it beside the demo's pages, with a button for each persona the text names, a **View** switch between plain and dressed, and **Reset this demo**. The bar across the top links to every demo, and `/` lists them. `ResetDemo` forgets the demo's data in the visitor's sandbox, so its story starts again. Any address takes `?as=<persona>`, as a link from the book does.
+Each demo's `demo.json` describes it: its title and topic, what it is, the story its seed data tells, what to try, who a visitor can be in it, and the link that resets it. The sign-in offers its personas, the local host's `services.json` carries it, and the environment passes it to the shell, whose demo panel shows it beside the demo's pages, with a button for each persona the text names, a **View** switch between plain and dressed, and **Reset this demo**. The bar across the top links to every demo, and `/` lists them. `ResetDemo` forgets the demo's data in the visitor's sandbox, so its story starts again. Any address takes `?as=<persona>`, as a link from the book does.
 
 ## Running locally
 
